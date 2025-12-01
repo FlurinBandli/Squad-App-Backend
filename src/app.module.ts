@@ -2,6 +2,10 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import typeormConfig, { type TypeOrmConfig } from "./config/typeorm.config";
+import { PlayerModule } from './player/player.module';
+import { TrainerModule } from './trainer/trainer.module';
+import { SquadModule } from './squad/squad.module';
+import { SquadPlayerModule } from './squad-player/squad-player.module';
 import authConfig from "./config/auth.config";
 
 @Module({
@@ -15,6 +19,10 @@ import authConfig from "./config/auth.config";
       useFactory: (configService: ConfigService) =>
         configService.get<TypeOrmConfig>("typeorm")!,
     }),
+    PlayerModule,
+    TrainerModule,
+    SquadModule,
+    SquadPlayerModule,
   ],
 })
 export class AppModule {}
