@@ -1,0 +1,25 @@
+services:
+  db:
+    image: mysql:latest
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_NAME}
+    expose:
+      - 3306
+      - 33060
+    ports:
+      - "3306:3306"
+  db_dashboard:
+    image: phpmyadmin:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_NAME}
+    ports:
+      - "80:80"
+
+volumes:
+  db_data:
