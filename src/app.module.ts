@@ -16,11 +16,8 @@ import authConfig from "./config/auth.config";
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const newLocal = configService.get<TypeOrmConfig>("typeorm")!;
-        console.info(newLocal);
-        return newLocal;
-      },
+      useFactory: (configService: ConfigService) =>
+        configService.get<TypeOrmConfig>("typeorm")!,
     }),
     PlayerModule,
     TrainerModule,
