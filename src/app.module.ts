@@ -2,10 +2,10 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import typeormConfig, { type TypeOrmConfig } from "./config/typeorm.config";
-import { PlayerModule } from './player/player.module';
-import { TrainerModule } from './trainer/trainer.module';
-import { SquadModule } from './squad/squad.module';
-import { SquadPlayerModule } from './squad-player/squad-player.module';
+import { PlayerModule } from "./player/player.module";
+import { TrainerModule } from "./trainer/trainer.module";
+import { SquadModule } from "./squad/squad.module";
+import { SquadPlayerModule } from "./squad-player/squad-player.module";
 import authConfig from "./config/auth.config";
 
 @Module({
@@ -16,8 +16,11 @@ import authConfig from "./config/auth.config";
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>
-        configService.get<TypeOrmConfig>("typeorm")!,
+      useFactory: (configService: ConfigService) => {
+        const newLocal = configService.get<TypeOrmConfig>("typeorm")!;
+        console.info(newLocal);
+        return newLocal;
+      },
     }),
     PlayerModule,
     TrainerModule,
