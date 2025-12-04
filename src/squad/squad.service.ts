@@ -3,7 +3,7 @@ import { CreateSquadDto } from "./dto/create-squad.dto";
 import { UpdateSquadDto } from "./dto/update-squad.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Squad } from "./entities/squad.entity";
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 
 @Injectable()
 export class SquadService {
@@ -12,8 +12,8 @@ export class SquadService {
     private squadRepository: Repository<Squad>,
   ) {}
 
-  create(createSquadDto: CreateSquadDto): Promise<Squad> {
-    return this.squadRepository.save(createSquadDto);
+  async create(createSquadDto: CreateSquadDto): Promise<Squad> {
+    return Squad.new(await this.squadRepository.save(createSquadDto));
   }
 
   findAll(): Promise<Squad[]> {
@@ -30,8 +30,8 @@ export class SquadService {
   ): Promise<Squad | null> {
     const squad = await this.findOne(id);
     if (!squad) return null;
-    const updateSquad = this.squadRepository.merge(squad, updateSquadDto);
-    return await this.squadRepository.save(updateSquad);
+    const updateSquad: DeepPartial<Squad> = { ...squad, ...updateSquadDto };
+    return Squad.new(await this.squadRepository.save(updateSquad));
   }
 
   async remove(id: number): Promise<void> {

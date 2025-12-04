@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { ClassSerializerInterceptor, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import typeormConfig, { type TypeOrmConfig } from "./config/typeorm.config";
@@ -24,5 +24,6 @@ import authConfig from "./config/auth.config";
     SquadModule,
     SquadPlayerModule,
   ],
+  providers: [ClassSerializerInterceptor],
 })
 export class AppModule {}
