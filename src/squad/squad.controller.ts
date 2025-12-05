@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from "@nestjs/common";
 import { SquadService } from "./squad.service";
 import { CreateSquadDto } from "./dto/create-squad.dto";
@@ -13,6 +15,7 @@ import { UpdateSquadDto } from "./dto/update-squad.dto";
 import { Squad } from "./entities/squad.entity";
 
 @Controller("squad")
+@UseInterceptors(ClassSerializerInterceptor)
 export class SquadController {
   constructor(private readonly squadService: SquadService) {}
 

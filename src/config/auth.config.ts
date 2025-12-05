@@ -1,4 +1,4 @@
-const authConfig = () => ({
+export default () => ({
   jwt: {
     secret: process.env.JWT_SECRET || "default-secret",
     expiresIn: process.env.JWT_EXPIRES_IN || "1h",
@@ -6,4 +6,3 @@ const authConfig = () => ({
     password: process.env.AUTH_PASSWORD || "password",
   },
 });
-export default authConfig;

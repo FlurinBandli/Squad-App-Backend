@@ -1,8 +1,8 @@
 import { type TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { type MysqlConnectionOptions } from "typeorm/driver/mysql/MysqlConnectionOptions.js";
+import { type MysqlConnectionOptions } from "typeorm/driver/mysql/MysqlConnectionOptions";
 
 export type TypeOrmConfig = TypeOrmModuleOptions & MysqlConnectionOptions & {};
-const typeormConfig: () => { typeorm: TypeOrmConfig } = () => ({
+export default (): { typeorm: TypeOrmConfig } => ({
   typeorm: {
     type: "mysql",
     host: process.env.DATABASE_HOST,
@@ -16,4 +16,3 @@ const typeormConfig: () => { typeorm: TypeOrmConfig } = () => ({
     synchronize: false,
   },
 });
-export default typeormConfig;

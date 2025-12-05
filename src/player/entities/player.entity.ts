@@ -16,6 +16,8 @@ export class Player {
   @Column({ type: "enum", enum: Gender })
   gender: Gender;
 
-  @OneToMany(() => SquadPlayer, (squadPlayer) => squadPlayer.player)
+  @OneToMany(() => SquadPlayer, (squadPlayer) => squadPlayer.player, {
+    cascade: true,
+  })
   squadPlayers: SquadPlayer[];
 }
