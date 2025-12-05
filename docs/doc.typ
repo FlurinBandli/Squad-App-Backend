@@ -264,7 +264,7 @@
         ([Relationen], (("i", 9, 1), ("b", 10, 1))),
         ([Datenbank], (("i", 4, 1), ("s", 11, 1))),
         ([Migrationen], (("i", 5, 1), ("s", 14, 1))),
-        ([Authentifizierung], (("s", 15, 1), ("s", 18, 1))),
+        ([Authentifizierung], (("b", 15, 1), ("s", 18, 1))),
         ([Swagger], (("s", 19, 1),)),
       ),
     ),
