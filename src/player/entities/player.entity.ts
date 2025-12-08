@@ -1,6 +1,5 @@
-import { SquadPlayer } from "src/squad-player/entities/squad-player.entity";
 import { Gender } from "src/types";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Player {
@@ -13,11 +12,6 @@ export class Player {
   @Column({ length: 255 })
   lastName: string;
 
-  @Column({ type: "enum", enum: Gender })
+  @Column()
   gender: Gender;
-
-  @OneToMany(() => SquadPlayer, (squadPlayer) => squadPlayer.player, {
-    cascade: true,
-  })
-  squadPlayers: SquadPlayer[];
 }

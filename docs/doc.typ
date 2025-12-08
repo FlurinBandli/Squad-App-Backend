@@ -464,21 +464,33 @@
   // [geleistete Überstunden],
   // [],
   [Erreichte Ziele],
-  [],
+  [
+    - Swagger
+    - Controller verbessern, sodass es die Aufgabenstellung erspricht
+  ],
   [Erfolgserlebnisse],
-  [],
+  [
+    - Swagger Api Docs erstellen
+  ],
   [Herausforderungen],
-  [],
+  [
+    - Swagger Decorators verwenden, um die Endpoints zu dokumentieren.
+  ],
   [Probleme],
   [],
   [Lösungen],
   [],
-  [Durchgeführte Tests],
-  [],
+  // [Durchgeführte Tests],
+  // [],
   [Wissensbeschaffung],
   [],
   [Beanspruchte Hilfeleistung],
-  [],
+  [
+    - https://docs.nestjs.com/interceptors
+    - https://docs.nestjs.com/openapi/types-and-parameters
+    - https://docs.nestjs.com/openapi/cli-plugin
+    - https://docs.nestjs.com/openapi/operations
+  ],
   [Vergleich mit dem Soll-Zeitplan],
   [],
   [Persönliche Tagesreflexion],

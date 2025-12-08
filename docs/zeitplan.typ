@@ -40,7 +40,7 @@
             ("i", 14, 1),
             ("b", 16, 1),
             ("s", 17, 1),
-            ("b", 18, 1),
+            ("i", 18, 1),
             ("s", 20, 2),
             ("s", 23, 1),
             ("s", 26, 2),
@@ -79,12 +79,12 @@
         ([Entities], (("b", 3, 1),)),
         ([Requests], (("s", 4, 1), ("i", 6, 1))),
         ([Services], (("s", 6, 1), ("i", 7, 1), ("i", 11, 1))),
-        ([Controllers], (("s", 7, 1), ("i", 8, 1))),
+        ([Controllers], (("s", 7, 1), ("i", 8, 1), ("i", 21, 1))),
         ([Relationen], (("i", 9, 1), ("b", 10, 1))),
         ([Datenbank], (("i", 4, 1), ("s", 11, 1))),
         ([Migrationen], (("i", 5, 1), ("s", 14, 1))),
         ([Authentifizierung], (("b", 15, 1), ("i", 17, 1), ("s", 18, 1))),
-        ([Swagger], (("s", 19, 1),)),
+        ([Swagger], (("b", 19, 1), ("i", 20, 1))),
       ),
     ),
     (
@@ -194,7 +194,7 @@
     ..computed-timeplan-data.flatten(),
 
     [],
-    [*Total*], [*#ist-zeit*], [*#soll-zeit*], table.cell(colspan: 40)[],
+    [*Total*], [*#soll-zeit*], [*#ist-zeit*], table.cell(colspan: 40)[],
 
     table.hline(),
     table.vline(),

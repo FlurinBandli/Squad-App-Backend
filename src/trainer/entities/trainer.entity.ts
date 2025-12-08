@@ -1,6 +1,5 @@
-import { Squad } from "src/squad/entities/squad.entity";
 import { Gender } from "src/types";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Trainer {
@@ -13,9 +12,6 @@ export class Trainer {
   @Column({ length: 255 })
   lastName: string;
 
-  @Column({ type: "enum", enum: Gender })
+  @Column()
   gender: Gender;
-
-  @OneToMany(() => Squad, (squad) => squad.trainer)
-  squads: Squad[];
 }

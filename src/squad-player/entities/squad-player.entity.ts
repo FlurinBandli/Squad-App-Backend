@@ -1,3 +1,4 @@
+import { ApiHideProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { Player } from "src/player/entities/player.entity";
 import { Squad } from "src/squad/entities/squad.entity";
@@ -24,20 +25,22 @@ export class SquadPlayer {
   @ManyToOne(() => Player, {
     eager: true,
     nullable: false,
+    orphanedRowAction: "delete",
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   })
   player: Player;
 
+  @ApiHideProperty()
   @Exclude()
   @ManyToOne(() => Squad, (squad) => squad.squadPlayers, {
     nullable: false,
+    orphanedRowAction: "delete",
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
-    orphanedRowAction: "delete",
   })
   squad: Squad;
 
-  @Column({ type: "enum", enum: Position })
+  @Column()
   position: Position;
 }

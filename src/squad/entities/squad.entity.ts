@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { IsInstance, ValidateNested } from "class-validator";
-import { SquadPlayer } from "src/squad-player/entities/squad-player.entity";
-import { Trainer } from "src/trainer/entities/trainer.entity";
+import { SquadPlayer } from "../../squad-player/entities/squad-player.entity";
+import { Trainer } from "../../trainer/entities/trainer.entity";
 import {
   Column,
   Entity,
@@ -22,7 +22,7 @@ export class Squad {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Trainer, (trainer) => trainer.squads, {
+  @ManyToOne(() => Trainer, {
     eager: true,
     nullable: false,
   })
