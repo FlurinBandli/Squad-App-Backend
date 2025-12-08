@@ -7,11 +7,17 @@ import { TrainerModule } from "./trainer/trainer.module";
 import { SquadModule } from "./squad/squad.module";
 import { SquadPlayerModule } from "./squad-player/squad-player.module";
 import authConfig from "./config/auth.config";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule.forRoot({
       load: [typeormConfig],
+      isGlobal: true,
+    }),
+    ConfigModule.forRoot({
+      load: [authConfig],
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
