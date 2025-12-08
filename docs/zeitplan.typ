@@ -3,7 +3,6 @@
   date.display("[day].[month]")
 }
 
-
 #page(paper: "a3", flipped: true)[
   #let hours-in-unit = 2
   #let timeplan-data-dates = (
@@ -39,7 +38,9 @@
             ("s", 8, 2),
             ("b", 12, 2),
             ("i", 14, 1),
-            ("s", 16, 2),
+            ("b", 16, 1),
+            ("s", 17, 1),
+            ("b", 18, 1),
             ("s", 20, 2),
             ("s", 23, 1),
             ("s", 26, 2),
@@ -82,7 +83,7 @@
         ([Relationen], (("i", 9, 1), ("b", 10, 1))),
         ([Datenbank], (("i", 4, 1), ("s", 11, 1))),
         ([Migrationen], (("i", 5, 1), ("s", 14, 1))),
-        ([Authentifizierung], (("b", 15, 1), ("s", 18, 1))),
+        ([Authentifizierung], (("b", 15, 1), ("i", 17, 1), ("s", 18, 1))),
         ([Swagger], (("s", 19, 1),)),
       ),
     ),

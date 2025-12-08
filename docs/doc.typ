@@ -1,3 +1,8 @@
+// TODO:
+// - Endpunkte definieren in Tabelle
+// - Mehere Trainers pro Team
+// - Arbeitsprotokoll 4.12.
+
 #set page(
   header: [
     #set text(size: 8pt)
@@ -158,6 +163,18 @@
   [
     - Alle Ziele
     - Datebank Docker Container aufgesetzt, aber wurde nicht fertig.
+    - Ausgewählte Technologien:
+      - TypeScript (backend)
+      - Node (Javascript runtime)
+      - NestJS (web framework)
+      - TypeORM (ORM)
+      - MySQL (Datenbank)
+      - PHPMyAdmin (Datenbank Dashboard)
+      - Docker (Containerization)
+      - Typst (Dokumente + Grafiken + Zeitplan + Diagramme)
+      - PNPM (package manager)
+      - VSCode (IDE)
+      - Lazygit (Git Terminal UI)
   ],
   // [Erfolgserlebnisse],
   // [_keine_],
@@ -258,6 +275,7 @@
   [Persönliche Tagesreflexion],
   [Ich konnte mich besser konzentrieren als gestern.],
 )
+#pagebreak()
 
 === #show-date-long(2025, 12, 3)
 #table(
@@ -271,8 +289,8 @@
     - Relations
     - Serialisation
   ],
-  [geleistete Überstunden],
-  [],
+  // [geleistete Überstunden],
+  // [],
   [Erreichte Ziele],
   [
     - Alle
@@ -280,99 +298,171 @@
   [Erfolgserlebnisse],
   [
     - Relations definieren
+    - Probleme mit Relations lösen.
   ],
   [Herausforderungen],
-  [],
-  [Probleme],
   [
     - Es gibt (und hat immer noch) mehrere Probleme mit den Relations. Die meisten wurden gelöst, aber nicht alle.
-    - Es gab Probleme mit dem Serialisation, weil es die Felder rekursiv in JSON umgewandelt hat
+  ],
+  [Probleme],
+  [
+    - Relations von der Tabelle, die referenziert wird, bearbeiten, hat nicht funktioniert. Ein `SquadPlayer` besitzt
+      einen `Squad` und ein `Squad` kann von mehrere `SquadPlayer`s besitzt werden. Der `Squad` sollte den
+      `SquadPlayer`, welcher ihn besitzt, bearbeiten können.
+    - Serialisation hat nicht funktioniert, weil der `ClassSerializerInterceptor` nicht funktioniert hat.
+    - Serialisation hat nicht funktioniert, weil es die Felder rekursiv in JSON umgewandelt hat.
+    - Imports in der Datenbank-Konfiguration haben fehlgeschlagen.
   ],
   [Lösungen],
   [
-    - https://dev.to/mgohin/typeorm-remove-children-with-orphanedrowaction-4m7b
-    - https://docs.nestjs.com/techniques/database#database
+    - Ich habe Cascades verwendet, sodass man der `Squad` den `SquadPlayer`, welcher ihn besitzt, bearbeiten können.
   ],
   // [Durchgeführte Tests],
   // [],
   [Wissensbeschaffung],
-  [],
+  [
+    - Ich habe gelernt, wie man besser mit Relations umgeht.
+  ],
   [Beanspruchte Hilfeleistung],
-  [],
+  [
+    - https://typeorm.io/docs/relations/relations/#cascades
+    - https://dev.to/mgohin/typeorm-remove-children-with-orphanedrowaction-4m7b
+    - https://typeorm.io/docs/relations/many-to-one-one-to-many-relations
+    - https://docs.nestjs.com/techniques/database#database
+  ],
   [Vergleich mit dem Soll-Zeitplan],
-  [],
+  [
+    - Ich habe mehr erledigt als gedacht.
+  ],
   [Persönliche Tagesreflexion],
-  [],
+  [
+    - Ich habe ganz viele Probleme gelöst, aber ich hatte nicht genug Zeit, die Lerndoku zu schreiben.
+  ],
 )
+#pagebreak()
 
 === #show-date-long(2025, 12, 4)
 #table(
   [Tagesziele gemäss Zeitplan],
-  [],
-  [Ungeplante Arbeiten],
-  [],
-  [geleistete Überstunden],
-  [],
+  [
+    - Relationen
+    - Datenbank
+  ],
+  // [Ungeplante Arbeiten],
+  // [],
+  // [geleistete Überstunden],
+  // [],
   [Erreichte Ziele],
-  [],
+  [
+    - Relationen
+    - Service
+  ],
   [Erfolgserlebnisse],
-  [],
+  [
+    - Ich habe das letzte Problem mit den Relationen gelöst und es im Service umgesetzt.
+  ],
   [Herausforderungen],
-  [],
+  [
+    - Es gab noch ein letztes Problem mit den Relationen.
+  ],
   [Probleme],
-  [],
+  [
+    - Relationen im Service und im Controller umsetzen.
+    - `ClassSerializerInterceptor` hat nicht funktioniert.
+    - Die Fremdschlüssel waren nullable.
+    - Die Fremdschlüssel hatten keine Datenbank On-Update-/On-Delete-Cascades.
+  ],
   [Lösungen],
-  [],
-  [Durchgeführte Tests],
-  [],
+  [
+    - Fremdschlüssel im Entity anpassen und neue Migrations erstellen.
+    - Interceptor im Controller hinzufügen.
+    - Service anpassen, sodass die Relationen richtig funktionieren.
+  ],
+  // [Durchgeführte Tests],
+  // [],
   [Wissensbeschaffung],
-  [],
+  [
+    - Wie man Relationen mit dem Service verwendet.
+  ],
   [Beanspruchte Hilfeleistung],
-  [],
+  [
+    - https://typeorm.io/docs/entity/entities
+    - https://typeorm.io/docs/relations/relations/#cascades
+    - https://typeorm.io/docs/relations/many-to-one-one-to-many-relations
+    - https://docs.nestjs.com/interceptors#binding-interceptors
+  ],
   [Vergleich mit dem Soll-Zeitplan],
-  [],
+  [
+    - Die Datenbank war schon fertig.
+  ],
   [Persönliche Tagesreflexion],
-  [],
+  [
+    - Die Relationen funktionieren jetzt.
+  ],
 )
 
 === #show-date-long(2025, 12, 5)
 #table(
   [Tagesziele gemäss Zeitplan],
-  [],
-  [Ungeplante Arbeiten],
-  [],
-  [geleistete Überstunden],
-  [],
+  [
+    - Migrationen definieren
+    - Authentifizierung definieren
+  ],
+  // [Ungeplante Arbeiten],
+  // [],
+  // [geleistete Überstunden],
+  // [],
   [Erreichte Ziele],
-  [],
+  [
+    - Authentifizierung
+  ],
   [Erfolgserlebnisse],
-  [],
+  [
+    - Authentifizierung
+  ],
   [Herausforderungen],
-  [],
+  [
+    - JWT Guards
+  ],
   [Probleme],
-  [],
+  [
+    - Die JWT Guards im Controller haben nicht funktioniert.
+    - Git Commits gerebast statt gemergt.
+  ],
   [Lösungen],
-  [],
-  [Durchgeführte Tests],
-  [],
+  [
+    - `UseGuards` und die Authentifizierungs-Konfiguration angepasst.
+    - Git Rebase Commits rückgängig gemacht und gemergt.
+  ],
+  // [Durchgeführte Tests],
+  // [],
   [Wissensbeschaffung],
-  [],
+  [
+    - Wie man Probleme mit den JWT Guards löst.
+  ],
   [Beanspruchte Hilfeleistung],
-  [],
+  [
+    - https://docs.nestjs.com/security/authentication
+  ],
   [Vergleich mit dem Soll-Zeitplan],
-  [],
+  [Ungefär gleich, aber ich habe zu viel Zeit einplant.],
   [Persönliche Tagesreflexion],
-  [],
+  [
+    - Authentifizierung fertig
+  ],
 )
 
 === #show-date-long(2025, 12, 8)
 #table(
   [Tagesziele gemäss Zeitplan],
-  [],
-  [Ungeplante Arbeiten],
-  [],
-  [geleistete Überstunden],
-  [],
+  [
+    - Authentifizierung
+    - Swagger
+  ],
+  // [Ungeplante Arbeiten],
+  // [],
+  // [geleistete Überstunden],
+  // [],
   [Erreichte Ziele],
   [],
   [Erfolgserlebnisse],
