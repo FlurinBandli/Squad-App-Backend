@@ -1,5 +1,11 @@
 import { Position } from "src/types";
-import { IsDate, IsNumber, IsString, ValidateNested } from "class-validator";
+import {
+  IsDate,
+  IsInstance,
+  IsNumber,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -23,7 +29,10 @@ class SquadSquadPlayerDto {
 
 export class CreateSquadDto {
   @ApiProperty({ description: "Trainer für diesen Squad" })
-  trainer: TrainerId;
+  @IsInstance(TrainerId, { each: true })
+  @ValidateNested()
+  @Type(() => TrainerId)
+  trainer: TrainerId[];
 
   @ApiProperty({ description: "Name", example: "FC Zürich" })
   @IsString()
@@ -38,6 +47,7 @@ export class CreateSquadDto {
   date: Date;
 
   @ApiProperty({ description: "Spieler mit ihren Positionen in diesem Team" })
+  @IsInstance(SquadSquadPlayerDto, { each: true })
   @ValidateNested({ always: true })
   @Type(() => SquadSquadPlayerDto)
   squadPlayers: SquadSquadPlayerDto[];
