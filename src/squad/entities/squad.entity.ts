@@ -5,7 +5,8 @@ import { Trainer } from "../../trainer/entities/trainer.entity";
 import {
   Column,
   Entity,
-  ManyToOne,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -25,11 +26,16 @@ export class Squad {
   id: number;
 
   @ApiProperty({ description: "Trainer für diesen Squad" })
-  @ManyToOne(() => Trainer, {
+  @IsInstance(Trainer, { each: true })
+  @ValidateNested()
+  @Type(() => Trainer)
+  @ManyToMany(() => Trainer, {
     eager: true,
-    nullable: false,
+    cascade: true,
+    // nullable: false,
   })
-  trainer: Trainer;
+  @JoinTable()
+  trainer: Trainer[];
 
   @ApiProperty({ description: "Name", example: "FC Zürich" })
   @Column({ length: 255 })
@@ -44,12 +50,12 @@ export class Squad {
   date: Date;
 
   @ApiProperty({ description: "Spieler mit ihren Positionen in diesem Team" })
+  @IsInstance(SquadPlayer, { each: true })
+  @ValidateNested()
+  @Type(() => SquadPlayer)
   @OneToMany(() => SquadPlayer, (squadPlayer) => squadPlayer.squad, {
     eager: true,
     cascade: true,
   })
-  @IsInstance(SquadPlayer, { each: true })
-  @ValidateNested()
-  @Type(() => SquadPlayer)
   squadPlayers: SquadPlayer[];
 }
