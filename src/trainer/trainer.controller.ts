@@ -9,6 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
   ClassSerializerInterceptor,
+  NotFoundException,
 } from "@nestjs/common";
 import { TrainerService } from "./trainer.service";
 import { CreateTrainerDto } from "./dto/create-trainer.dto";
@@ -50,26 +51,31 @@ export class TrainerController {
   @ApiOkResponse({ type: Trainer, description: "Trainer ausgelesen" })
   @ApiNotFoundResponse({ description: "Trainer existiert nicht" })
   @Get(":id")
-  findOne(@Param("id") id: number): Promise<Trainer | null> {
-    return this.trainerService.findOne(id);
+  async findOne(@Param("id") id: number): Promise<Trainer> {
+    const trainer = await this.trainerService.findOne(id);
+    if (!trainer) throw new NotFoundException();
+    return trainer;
   }
 
   @ApiOperation({ summary: "Bearbeite einen Trainer" })
   @ApiOkResponse({ type: Trainer, description: "Trainer bearbeitet" })
   @ApiNotFoundResponse({ description: "Trainer existiert nicht" })
   @Patch(":id")
-  update(
+  async update(
     @Param("id") id: number,
     @Body() updateTrainerDto: UpdateTrainerDto,
-  ): Promise<Trainer | null> {
-    return this.trainerService.update(id, updateTrainerDto);
+  ): Promise<Trainer> {
+    const trainer = await this.trainerService.update(id, updateTrainerDto);
+    if (!trainer) throw new NotFoundException();
+    return trainer;
   }
 
   @ApiOperation({ summary: "Lösche einen Trainer" })
   @ApiOkResponse({ description: "Trainer gelöscht" })
   @ApiNotFoundResponse({ description: "Trainer existiert nicht" })
   @Delete(":id")
-  remove(@Param("id") id: number): Promise<void> {
-    return this.trainerService.remove(id);
+  async remove(@Param("id") id: number): Promise<void> {
+    const exists = await this.trainerService.remove(id);
+    if (!exists) throw new NotFoundException();
   }
 }

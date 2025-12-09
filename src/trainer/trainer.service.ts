@@ -37,7 +37,11 @@ export class TrainerService {
     return await this.trainerRepository.save(updateTrainer);
   }
 
-  async remove(id: number): Promise<void> {
-    await this.trainerRepository.delete(id);
+  async remove(id: number): Promise<boolean> {
+    const exists = await this.trainerRepository.existsBy({ id });
+    if (exists) {
+      await this.trainerRepository.delete(id);
+    }
+    return exists;
   }
 }

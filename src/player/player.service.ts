@@ -34,7 +34,11 @@ export class PlayerService {
     return await this.playerRepository.save(updatePlayer);
   }
 
-  async remove(id: number): Promise<void> {
-    await this.playerRepository.delete(id);
+  async remove(id: number): Promise<boolean> {
+    const exists = await this.playerRepository.existsBy({ id });
+    if (exists) {
+      await this.playerRepository.delete(id);
+    }
+    return exists;
   }
 }

@@ -9,6 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
   ClassSerializerInterceptor,
+  NotFoundException,
 } from "@nestjs/common";
 import { PlayerService } from "./player.service";
 import { CreatePlayerDto } from "./dto/create-player.dto";
@@ -50,26 +51,31 @@ export class PlayerController {
   @ApiOkResponse({ type: Player, description: "Spieler ausgelesen" })
   @ApiNotFoundResponse({ description: "Spieler existiert nicht" })
   @Get(":id")
-  findOne(@Param("id") id: number): Promise<Player | null> {
-    return this.playerService.findOne(id);
+  async findOne(@Param("id") id: number): Promise<Player> {
+    const player = await this.playerService.findOne(id);
+    if (!player) throw new NotFoundException();
+    return player;
   }
 
   @ApiOperation({ summary: "Bearbeite einen Spieler" })
   @ApiOkResponse({ type: Player, description: "Spieler bearbeitet" })
   @ApiNotFoundResponse({ description: "Spieler existiert nicht" })
   @Patch(":id")
-  update(
+  async update(
     @Param("id") id: number,
     @Body() updatePlayerDto: UpdatePlayerDto,
-  ): Promise<Player | null> {
-    return this.playerService.update(id, updatePlayerDto);
+  ): Promise<Player> {
+    const player = await this.playerService.update(id, updatePlayerDto);
+    if (!player) throw new NotFoundException();
+    return player;
   }
 
   @ApiOperation({ summary: "Lösche einen Spieler" })
   @ApiOkResponse({ description: "Spieler gelöscht" })
   @ApiNotFoundResponse({ description: "Spieler existiert nicht" })
   @Delete(":id")
-  remove(@Param("id") id: number): Promise<void> {
-    return this.playerService.remove(id);
+  async remove(@Param("id") id: number): Promise<void> {
+    const exists = await this.playerService.remove(id);
+    if (!exists) throw new NotFoundException();
   }
 }
