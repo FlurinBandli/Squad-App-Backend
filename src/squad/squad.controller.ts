@@ -20,15 +20,17 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 
-@Controller("squad")
+@Controller("/squad")
 @UseInterceptors(ClassSerializerInterceptor)
 export class SquadController {
   constructor(private readonly squadService: SquadService) {}
 
-  @ApiCreatedResponse({ type: Squad })
+  @ApiOperation({ summary: "Erstelle einen Squad" })
+  @ApiCreatedResponse({ type: Squad, description: "Squad erstellt" })
   @ApiUnauthorizedResponse()
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
@@ -37,7 +39,8 @@ export class SquadController {
     return this.squadService.create(createSquadDto);
   }
 
-  @ApiOkResponse({ type: [Squad] })
+  @ApiOperation({ summary: "Lese alle Squad aus" })
+  @ApiOkResponse({ type: [Squad], description: "Alle Squads ausgelesen" })
   @ApiUnauthorizedResponse()
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
@@ -46,15 +49,17 @@ export class SquadController {
     return this.squadService.findAll();
   }
 
-  @ApiOkResponse({ type: Squad })
-  @ApiNotFoundResponse()
+  @ApiOperation({ summary: "Lese einen Squad aus" })
+  @ApiOkResponse({ type: Squad, description: "Squad ausgelesen" })
+  @ApiNotFoundResponse({ description: "Squad existiert nicht" })
   @Get(":id")
   findOne(@Param("id") id: number): Promise<Squad | null> {
     return this.squadService.findOne(id);
   }
 
-  @ApiOkResponse({ type: Squad })
-  @ApiNotFoundResponse()
+  @ApiOperation({ summary: "Bearbeite einen Squad" })
+  @ApiOkResponse({ type: Squad, description: "Squad bearbeitet" })
+  @ApiNotFoundResponse({ description: "Squad existiert nicht" })
   @ApiUnauthorizedResponse()
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
@@ -66,8 +71,9 @@ export class SquadController {
     return this.squadService.update(id, updateSquadDto);
   }
 
-  @ApiOkResponse()
-  @ApiNotFoundResponse()
+  @ApiOperation({ summary: "Lösche einen Squad" })
+  @ApiOkResponse({ description: "Squad gelöscht" })
+  @ApiNotFoundResponse({ description: "Squad existiert nicht" })
   @ApiUnauthorizedResponse()
   @ApiBearerAuth()
   @UseGuards(JwtGuard)

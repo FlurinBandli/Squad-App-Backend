@@ -28,32 +28,35 @@ import {
 @ApiBearerAuth()
 @UseGuards(JwtGuard)
 @UseInterceptors(ClassSerializerInterceptor)
-@Controller("player")
+@Controller("/player")
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
   @ApiOperation({ summary: "Erstelle einen Spieler" })
-  @ApiCreatedResponse({ type: Player })
+  @ApiCreatedResponse({ type: Player, description: "Spieler erstellt" })
   @Post()
   create(@Body() createPlayerDto: CreatePlayerDto): Promise<Player> {
     return this.playerService.create(createPlayerDto);
   }
 
-  @ApiOkResponse({ type: [Player] })
+  @ApiOperation({ summary: "Lese alle Spieler aus" })
+  @ApiOkResponse({ type: [Player], description: "Alle Spieler ausgelesen" })
   @Get()
   findAll(): Promise<Player[]> {
     return this.playerService.findAll();
   }
 
-  @ApiOkResponse({ type: Player })
-  @ApiNotFoundResponse()
+  @ApiOperation({ summary: "Lese einen Spieler aus" })
+  @ApiOkResponse({ type: Player, description: "Spieler ausgelesen" })
+  @ApiNotFoundResponse({ description: "Spieler existiert nicht" })
   @Get(":id")
   findOne(@Param("id") id: number): Promise<Player | null> {
     return this.playerService.findOne(id);
   }
 
-  @ApiOkResponse({ type: Player })
-  @ApiNotFoundResponse()
+  @ApiOperation({ summary: "Bearbeite einen Spieler" })
+  @ApiOkResponse({ type: Player, description: "Spieler bearbeitet" })
+  @ApiNotFoundResponse({ description: "Spieler existiert nicht" })
   @Patch(":id")
   update(
     @Param("id") id: number,
@@ -62,8 +65,9 @@ export class PlayerController {
     return this.playerService.update(id, updatePlayerDto);
   }
 
-  @ApiOkResponse()
-  @ApiNotFoundResponse()
+  @ApiOperation({ summary: "Lösche einen Spieler" })
+  @ApiOkResponse({ description: "Spieler gelöscht" })
+  @ApiNotFoundResponse({ description: "Spieler existiert nicht" })
   @Delete(":id")
   remove(@Param("id") id: number): Promise<void> {
     return this.playerService.remove(id);

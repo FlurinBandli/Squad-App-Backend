@@ -1,4 +1,4 @@
-import { ApiHideProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
 import { Player } from "src/player/entities/player.entity";
 import { Squad } from "src/squad/entities/squad.entity";
@@ -19,9 +19,11 @@ export class SquadPlayer {
     return self;
   }
 
+  @ApiProperty({ description: "ID", example: 1 })
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({ description: "Spieler" })
   @ManyToOne(() => Player, {
     eager: true,
     nullable: false,
@@ -41,6 +43,7 @@ export class SquadPlayer {
   })
   squad: Squad;
 
+  @ApiProperty({ description: "Position vom Spieler" })
   @Column()
   position: Position;
 }

@@ -20,6 +20,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 
@@ -27,31 +28,35 @@ import {
 @ApiBearerAuth()
 @UseGuards(JwtGuard)
 @UseInterceptors(ClassSerializerInterceptor)
-@Controller("trainer")
+@Controller("/trainer")
 export class TrainerController {
   constructor(private readonly trainerService: TrainerService) {}
 
-  @ApiCreatedResponse({ type: Trainer })
+  @ApiOperation({ summary: "Erstelle einen Trainer" })
+  @ApiCreatedResponse({ type: Trainer, description: "Trainer erstellt" })
   @Post()
   create(@Body() createTrainerDto: CreateTrainerDto): Promise<Trainer> {
     return this.trainerService.create(createTrainerDto);
   }
 
-  @ApiOkResponse({ type: [Trainer] })
+  @ApiOperation({ summary: "Lese alle Trainer aus" })
+  @ApiOkResponse({ type: [Trainer], description: "Alle Trainer ausgelesen" })
   @Get()
   findAll(): Promise<Trainer[]> {
     return this.trainerService.findAll();
   }
 
-  @ApiOkResponse({ type: Trainer })
-  @ApiNotFoundResponse()
+  @ApiOperation({ summary: "Lese einen Trainer aus" })
+  @ApiOkResponse({ type: Trainer, description: "Trainer ausgelesen" })
+  @ApiNotFoundResponse({ description: "Trainer existiert nicht" })
   @Get(":id")
   findOne(@Param("id") id: number): Promise<Trainer | null> {
     return this.trainerService.findOne(id);
   }
 
-  @ApiOkResponse({ type: Trainer })
-  @ApiNotFoundResponse()
+  @ApiOperation({ summary: "Bearbeite einen Trainer" })
+  @ApiOkResponse({ type: Trainer, description: "Trainer bearbeitet" })
+  @ApiNotFoundResponse({ description: "Trainer existiert nicht" })
   @Patch(":id")
   update(
     @Param("id") id: number,
@@ -60,8 +65,9 @@ export class TrainerController {
     return this.trainerService.update(id, updateTrainerDto);
   }
 
-  @ApiOkResponse()
-  @ApiNotFoundResponse()
+  @ApiOperation({ summary: "Lösche einen Trainer" })
+  @ApiOkResponse({ description: "Trainer gelöscht" })
+  @ApiNotFoundResponse({ description: "Trainer existiert nicht" })
   @Delete(":id")
   remove(@Param("id") id: number): Promise<void> {
     return this.trainerService.remove(id);
