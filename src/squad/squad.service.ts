@@ -34,7 +34,11 @@ export class SquadService {
     return Squad.new(await this.squadRepository.save(updateSquad));
   }
 
-  async remove(id: number): Promise<void> {
-    await this.squadRepository.delete(id);
+  async remove(id: number): Promise<boolean> {
+    const exists = await this.squadRepository.existsBy({ id });
+    if (exists) {
+      await this.squadRepository.delete(id);
+    }
+    return exists;
   }
 }

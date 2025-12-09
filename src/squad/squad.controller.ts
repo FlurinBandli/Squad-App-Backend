@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   UseGuards,
+  NotFoundException,
 } from "@nestjs/common";
 import { SquadService } from "./squad.service";
 import { CreateSquadDto } from "./dto/create-squad.dto";
@@ -53,8 +54,10 @@ export class SquadController {
   @ApiOkResponse({ type: Squad, description: "Squad ausgelesen" })
   @ApiNotFoundResponse({ description: "Squad existiert nicht" })
   @Get(":id")
-  findOne(@Param("id") id: number): Promise<Squad | null> {
-    return this.squadService.findOne(id);
+  async findOne(@Param("id") id: number): Promise<Squad | null> {
+    const squad = await this.squadService.findOne(id);
+    if (!squad) throw new NotFoundException();
+    return squad;
   }
 
   @ApiOperation({ summary: "Bearbeite einen Squad" })
@@ -64,11 +67,13 @@ export class SquadController {
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @Patch(":id")
-  update(
+  async update(
     @Param("id") id: number,
     @Body() updateSquadDto: UpdateSquadDto,
   ): Promise<Squad | null> {
-    return this.squadService.update(id, updateSquadDto);
+    const squad = await this.squadService.update(id, updateSquadDto);
+    if (!squad) throw new NotFoundException();
+    return squad;
   }
 
   @ApiOperation({ summary: "Lösche einen Squad" })
@@ -78,7 +83,8 @@ export class SquadController {
   @ApiBearerAuth()
   @UseGuards(JwtGuard)
   @Delete(":id")
-  remove(@Param("id") id: number): Promise<void> {
-    return this.squadService.remove(id);
+  async remove(@Param("id") id: number): Promise<void> {
+    const exists = await this.squadService.remove(id);
+    if (!exists) throw new NotFoundException();
   }
 }
