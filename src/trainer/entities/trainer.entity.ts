@@ -1,21 +1,22 @@
-import { Squad } from "src/squad/entities/squad.entity";
+import { ApiProperty } from "@nestjs/swagger";
 import { Gender } from "src/types";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Trainer {
+  @ApiProperty({ description: "ID", example: 1 })
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({ description: "Vorname", example: "Sven" })
   @Column({ length: 255 })
   firstName: string;
 
+  @ApiProperty({ description: "Nachname", example: "Toye" })
   @Column({ length: 255 })
   lastName: string;
 
-  @Column({ type: "enum", enum: Gender })
+  @ApiProperty({ description: "Geschlecht" })
+  @Column()
   gender: Gender;
-
-  @OneToMany(() => Squad, (squad) => squad.trainer)
-  squads: Squad[];
 }

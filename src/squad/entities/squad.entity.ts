@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { IsInstance, ValidateNested } from "class-validator";
-import { SquadPlayer } from "src/squad-player/entities/squad-player.entity";
-import { Trainer } from "src/trainer/entities/trainer.entity";
+import { SquadPlayer } from "../../squad-player/entities/squad-player.entity";
+import { Trainer } from "../../trainer/entities/trainer.entity";
 import {
   Column,
   Entity,
@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { CreateSquadDto } from "../dto/create-squad.dto";
+import { ApiProperty } from "@nestjs/swagger";
 
 @Entity()
 export class Squad {
@@ -19,24 +20,30 @@ export class Squad {
     return self;
   }
 
+  @ApiProperty({ description: "ID", example: 1 })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Trainer, (trainer) => trainer.squads, {
+  @ApiProperty({ description: "Trainer für diesen Squad" })
+  @ManyToOne(() => Trainer, {
     eager: true,
     nullable: false,
   })
   trainer: Trainer;
 
+  @ApiProperty({ description: "Name", example: "FC Zürich" })
   @Column({ length: 255 })
   name: string;
 
+  @ApiProperty({ description: "Beschreibung", example: "Seit 1896." })
   @Column({ length: 255 })
   description: string;
 
+  @ApiProperty({ description: "Erstellungsdatum" })
   @Column()
   date: Date;
 
+  @ApiProperty({ description: "Spieler mit ihren Positionen in diesem Team" })
   @OneToMany(() => SquadPlayer, (squadPlayer) => squadPlayer.squad, {
     eager: true,
     cascade: true,

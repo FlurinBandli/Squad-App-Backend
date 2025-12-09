@@ -7,36 +7,56 @@ import {
   Param,
   Delete,
   UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from "@nestjs/common";
 import { PlayerService } from "./player.service";
 import { CreatePlayerDto } from "./dto/create-player.dto";
 import { UpdatePlayerDto } from "./dto/update-player.dto";
 import { Player } from "./entities/player.entity";
 import { JwtGuard } from "src/auth/jwt.guard";
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
 
-@Controller("player")
+@ApiUnauthorizedResponse()
+@ApiBearerAuth()
+@UseGuards(JwtGuard)
+@UseInterceptors(ClassSerializerInterceptor)
+@Controller("/player")
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
-  @UseGuards(JwtGuard)
+  @ApiOperation({ summary: "Erstelle einen Spieler" })
+  @ApiCreatedResponse({ type: Player, description: "Spieler erstellt" })
   @Post()
   create(@Body() createPlayerDto: CreatePlayerDto): Promise<Player> {
     return this.playerService.create(createPlayerDto);
   }
 
-  @UseGuards(JwtGuard)
+  @ApiOperation({ summary: "Lese alle Spieler aus" })
+  @ApiOkResponse({ type: [Player], description: "Alle Spieler ausgelesen" })
   @Get()
   findAll(): Promise<Player[]> {
     return this.playerService.findAll();
   }
 
-  @UseGuards(JwtGuard)
+  @ApiOperation({ summary: "Lese einen Spieler aus" })
+  @ApiOkResponse({ type: Player, description: "Spieler ausgelesen" })
+  @ApiNotFoundResponse({ description: "Spieler existiert nicht" })
   @Get(":id")
   findOne(@Param("id") id: number): Promise<Player | null> {
     return this.playerService.findOne(id);
   }
 
-  @UseGuards(JwtGuard)
+  @ApiOperation({ summary: "Bearbeite einen Spieler" })
+  @ApiOkResponse({ type: Player, description: "Spieler bearbeitet" })
+  @ApiNotFoundResponse({ description: "Spieler existiert nicht" })
   @Patch(":id")
   update(
     @Param("id") id: number,
@@ -45,7 +65,9 @@ export class PlayerController {
     return this.playerService.update(id, updatePlayerDto);
   }
 
-  @UseGuards(JwtGuard)
+  @ApiOperation({ summary: "Lösche einen Spieler" })
+  @ApiOkResponse({ description: "Spieler gelöscht" })
+  @ApiNotFoundResponse({ description: "Spieler existiert nicht" })
   @Delete(":id")
   remove(@Param("id") id: number): Promise<void> {
     return this.playerService.remove(id);
