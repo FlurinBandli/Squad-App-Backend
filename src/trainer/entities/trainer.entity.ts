@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Gender } from "src/types";
+import { Gender } from "../../../src/types";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()

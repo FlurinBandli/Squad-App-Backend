@@ -15,7 +15,7 @@ import { PlayerService } from "./player.service";
 import { CreatePlayerDto } from "./dto/create-player.dto";
 import { UpdatePlayerDto } from "./dto/update-player.dto";
 import { Player } from "./entities/player.entity";
-import { JwtGuard } from "src/auth/jwt.guard";
+import { JwtGuard } from "../../src/auth/jwt.guard";
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
