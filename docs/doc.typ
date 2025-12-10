@@ -123,6 +123,8 @@
 
 #include "zeitplan.typ"
 
+#pagebreak()
+
 == Arbeitsprotokoll
 
 #if show-criteria [
@@ -764,7 +766,11 @@
   - Individuelle Bewertungskriterien
 ]
 
+#pagebreak()
+
 #include "erd.typ"
+
+#pagebreak()
 
 === Routen
 #if show-criteria [
@@ -773,6 +779,10 @@
   - Je nach Projekt musst du hier auch angeben, wie die Route angesprochen wird (POST, GET, …), die Route schematisch
     und mit Beispielen zeigen oder noch weitere Relevante Infos
 ]
+
+#include "endpoints.typ"
+
+#pagebreak()
 
 === Use-Case Diagramm / Aktivitätsdiagramm / Klassendiagramm / … Funktion XYZ
 #if show-criteria [
