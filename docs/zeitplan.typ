@@ -92,8 +92,8 @@
   (
     [Kontrollieren],
     (
-      ([Fehlerbehebung], (("s", 22, 1), ("s", 28, 2))),
-      ([Testen], (("s", 24, 2),)),
+      ([Fehlerbehebung], (("s", 22, 1), ("i", 27, 1), ("s", 28, 2))),
+      ([Testen], (("s", 24, 2), ("i", 26, 1))),
     ),
   ),
   (
