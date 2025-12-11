@@ -21,6 +21,7 @@ async function bootstrap() {
     }),
   );
 
+  const port = process.env.PORT ?? 3000;
   const config = new DocumentBuilder()
     .setTitle("Teamkader App")
     .setDescription(
@@ -28,6 +29,7 @@ async function bootstrap() {
     )
     .setVersion("1.0")
     .addBearerAuth({ type: "http" })
+    .setBasePath(`http://localhost:${port}`)
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, documentFactory, {
@@ -36,6 +38,6 @@ async function bootstrap() {
     yamlDocumentUrl: "api.yaml",
   });
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(port);
 }
 void bootstrap();
