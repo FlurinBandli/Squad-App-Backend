@@ -31,8 +31,9 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, documentFactory, {
-    raw: ["json"],
+    raw: ["json", "yaml"],
     jsonDocumentUrl: "api.json",
+    yamlDocumentUrl: "api.yaml",
   });
 
   await app.listen(process.env.PORT ?? 3000);
