@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-// test/player.e2e-spec.ts
 import { Test, TestingModule } from "@nestjs/testing";
-import { INestApplication, ValidationPipe } from "@nestjs/common";
+import { INestApplication, Type, ValidationPipe } from "@nestjs/common";
 import request from "supertest";
 import { App } from "supertest/types";
 import { PlayerModule } from "../src/player/player.module";
@@ -10,6 +7,9 @@ import { JwtGuard } from "../src/auth/jwt.guard";
 import { Player } from "../src/player/entities/player.entity";
 import { Gender } from "../src/types";
 import { getRepositoryToken } from "@nestjs/typeorm";
+import { EntityClassOrSchema } from "@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type";
+import { Trainer } from "../src/trainer/entities/trainer.entity";
+import { TrainerModule } from "../src/trainer/trainer.module";
 
 function expectObjectEq(a: unknown, b: unknown) {
   if (a instanceof Object && a != null) {
@@ -21,279 +21,335 @@ function expectObjectEq(a: unknown, b: unknown) {
     expect(a).toBe(b);
   }
 }
+function urlWithId(url: string, id: string | number): string {
+  return `${url}/${id}`;
+}
 
-const mockJwtGuard = {
-  canActivate: jest.fn(() => true),
+type MockEntity = { [key: string]: unknown };
+type MockTest = {
+  /** Name and url of test
+   * @example "player"
+   */
+  name: string;
+  /** Entity class
+   * @example Player
+   */
+  entityClass: EntityClassOrSchema;
+  /** Entity module class
+   * @example PlayerModule
+   */
+  entityModule: Type;
+  /** Valid entities */
+  entities: (MockEntity & { id: number })[];
+  /** Valid entities but only for updating */
+  partialEntities: MockEntity[];
+  /** Invalid entities but only for creating */
+  invalidForCreateEntities: {
+    entity: MockEntity;
+    err: string;
+  }[];
+  /** Invalid entities */
+  invalidEntities: {
+    entity: MockEntity;
+    err: string;
+  }[];
+  getOneHasGuard?: boolean;
 };
 
-const mockPlayerRepository = {
-  save: jest.fn((a): unknown => a),
-  find: jest.fn((): unknown[] => []),
-  findOneBy: jest.fn((): unknown => null),
-  existsBy: jest.fn(() => false),
-  update: jest.fn((a): unknown => a),
-  delete: jest.fn(() => false),
-  merge: jest.fn((a, b): unknown => ({ ...a, ...b })),
+const playerTests: MockTest = {
+  name: "player",
+  entityClass: Player,
+  entityModule: PlayerModule,
+
+  entities: [
+    { id: 1, firstName: "Karl", lastName: "Marx", gender: Gender.Other },
+    { id: 2, firstName: "Vladimir", lastName: "Lenin", gender: Gender.Male },
+    { id: 3, firstName: "Rosa", lastName: "Luxemburg", gender: Gender.Female },
+    { id: 4, firstName: "Patrice", lastName: "Lmumba", gender: Gender.Other },
+    { id: 5, firstName: "Fred", lastName: "Hampton", gender: Gender.Male },
+    { id: 5, firstName: "Thomas", lastName: "Sankara", gender: Gender.Male },
+  ],
+  partialEntities: [
+    { firstName: "Vladimir", lastName: "Lenin" },
+    { firstName: "Vladimir", gender: Gender.Male },
+    { lastName: "Lenin", gender: Gender.Male },
+    { firstName: "Rosa", lastName: "Luxemburg" },
+    { firstName: "Rosa", gender: Gender.Female },
+    { lastName: "Luxemburg", gender: Gender.Female },
+  ],
+
+  invalidForCreateEntities: [
+    { entity: { firstName: "Test" }, err: "missing last name and gender" },
+    { entity: {}, err: "missing all properties" },
+  ],
+  invalidEntities: [
+    {
+      entity: { firstName: "", lastName: "Test", gender: Gender.Male },
+      err: "empty first name",
+    },
+    {
+      entity: { firstName: "Test", lastName: "", gender: Gender.Male },
+      err: "empty last name",
+    },
+    {
+      entity: { firstName: "Test", lastName: "Player", gender: "INVALID" },
+      err: "invalid gender value",
+    },
+    {
+      entity: { firstName: "Test", lastName: "Player", gender: "" },
+      err: "invalid gender value",
+    },
+  ],
 };
 
-describe("PlayerController (e2e)", () => {
-  let app: INestApplication<App>;
-  const mockEntity0: Player = {
-    id: 1,
-    firstName: "Vladimir",
-    lastName: "Lenin",
-    gender: Gender.Male,
-  };
-  const mockEntity1: Player = {
-    id: 2,
-    firstName: "Rosa",
-    lastName: "Luxemburg",
-    gender: Gender.Female,
-  };
-  const mockEntity2: Player = {
-    id: 3,
-    firstName: "Karl",
-    lastName: "Marx",
-    gender: Gender.Other,
-  };
-  const mockEntityUpdate: Player = {
-    id: 4,
-    firstName: "Karl",
-    lastName: "Liebknecht",
-    gender: Gender.Male,
-  };
+const trainerTests: MockTest = {
+  name: "trainer",
+  entityClass: Trainer,
+  entityModule: TrainerModule,
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [PlayerModule],
-    })
-      .overrideProvider(getRepositoryToken(Player))
-      .useValue(mockPlayerRepository)
-      .overrideGuard(JwtGuard)
-      .useValue(mockJwtGuard)
-      .compile();
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        skipMissingProperties: false,
-        stopAtFirstError: true,
-        always: true,
-        transformOptions: {
-          enableCircularCheck: true,
-        },
-      }),
-    );
-    await app.init();
-  });
+  entities: [
+    { id: 1, firstName: "Yahya", lastName: "Sinwar", gender: Gender.Other },
+    { id: 2, firstName: "Mohammed", lastName: "Deif", gender: Gender.Male },
+    { id: 3, firstName: "Leila", lastName: "Khaled", gender: Gender.Female },
+    { id: 4, firstName: "Hassan", lastName: "Nasrallah", gender: Gender.Male },
+    { id: 5, firstName: "George", lastName: "Habash", gender: Gender.Male },
+  ],
+  partialEntities: [
+    { firstName: "Yahya", lastName: "Sinwar" },
+    { firstName: "Yahya", gender: Gender.Male },
+    { lastName: "Sinwar", gender: Gender.Male },
+    { firstName: "Mohammed", lastName: "Deif" },
+    { firstName: "Mohammed", gender: Gender.Male },
+    { lastName: "Deif", gender: Gender.Male },
+  ],
 
-  afterAll(async () => {
-    await app.close();
-  });
+  invalidForCreateEntities: [
+    { entity: { firstName: "Test" }, err: "missing last name and gender" },
+    { entity: {}, err: "missing all properties" },
+  ],
+  invalidEntities: [
+    {
+      entity: { firstName: "", lastName: "Test", gender: Gender.Male },
+      err: "empty first name",
+    },
+    {
+      entity: { firstName: "Test", lastName: "", gender: Gender.Female },
+      err: "empty last name",
+    },
+    {
+      entity: { firstName: "Test", lastName: "Player", gender: "INVALID" },
+      err: "invalid gender value",
+    },
+    {
+      entity: { firstName: "Test", lastName: "Player", gender: "" },
+      err: "invalid gender value",
+    },
+  ],
+};
+const tests: MockTest[] = [playerTests, trainerTests];
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+for (const test of tests) {
+  describe(test.name, () => {
+    let app: INestApplication<App>;
+    const url = `/${test.name}`;
 
-  describe("POST /player", () => {
-    it("should create a new male player", () => {
-      return request(app.getHttpServer())
-        .post("/player")
-        .send(mockEntity0)
-        .expect(201)
-        .then((response) => expectObjectEq(mockEntity0, response.body));
-    });
-    it("should create a new female player", () => {
-      return request(app.getHttpServer())
-        .post("/player")
-        .send(mockEntity1)
-        .expect(201)
-        .then((response) => expectObjectEq(mockEntity1, response.body));
-    });
-    it("should create a new player with other/unknown gender", () => {
-      return request(app.getHttpServer())
-        .post("/player")
-        .send(mockEntity2)
-        .expect(201)
-        .then((response) => expectObjectEq(mockEntity2, response.body));
-    });
-    it("should fail with missing last name and gender", () => {
-      return request(app.getHttpServer())
-        .post("/player")
-        .send({ firstName: "Test" })
-        .expect(400);
-    });
-    it("should fail with empty first name", () => {
-      return request(app.getHttpServer())
-        .post("/player")
-        .send({ firstName: "", lastName: "Test", gender: Gender.Male })
-        .expect(400);
-    });
-    it("should fail with empty last name", () => {
-      return request(app.getHttpServer())
-        .post("/player")
-        .send({ firstName: "Test", lastName: "", gender: Gender.Male })
-        .expect(400);
-    });
-    it("should fail with invalid gender value", () => {
-      return request(app.getHttpServer())
-        .post("/player")
-        .send({ firstName: "Test", lastName: "Player", gender: "INVALID" })
-        .expect(400);
-    });
-  });
+    const mockJwtGuard = {
+      canActivate: jest.fn(() => true),
+    };
 
-  describe("GET /player", () => {
-    it("should return all players", () => {
-      const mockData = [mockEntity0, mockEntity1, mockEntity2];
-      mockPlayerRepository.find.mockReturnValueOnce(mockData);
-      return request(app.getHttpServer())
-        .get("/player")
-        .expect(200)
-        .then((response) => {
-          const players = response.body;
-          expect(players).toBeInstanceOf(Array);
-          expect(players.length).toBe(mockData.length);
-          expectObjectEq(players, mockData);
+    const mockRepository = {
+      save: jest.fn((a): unknown => a),
+      find: jest.fn((): unknown[] => []),
+      findOneBy: jest.fn((): unknown => null),
+      existsBy: jest.fn(() => false),
+      update: jest.fn((a): unknown => a),
+      delete: jest.fn(() => false),
+      merge: jest.fn((a, b): unknown => ({ ...a, ...b })),
+    };
+
+    beforeAll(async () => {
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [test.entityModule],
+      })
+        .overrideProvider(getRepositoryToken(test.entityClass))
+        .useValue(mockRepository)
+        .overrideGuard(JwtGuard)
+        .useValue(mockJwtGuard)
+        .compile();
+      app = moduleFixture.createNestApplication();
+      app.useGlobalPipes(
+        new ValidationPipe({
+          transform: true,
+          skipMissingProperties: false,
+          stopAtFirstError: true,
+          always: true,
+          transformOptions: {
+            enableCircularCheck: true,
+          },
+        }),
+      );
+      await app.init();
+    });
+    afterAll(async () => {
+      await app.close();
+    });
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    describe(`POST ${url}`, () => {
+      for (const entity of test.entities) {
+        // OK 201
+        it(`should create a ${test.name}`, () => {
+          return request(app.getHttpServer())
+            .post(url)
+            .send(entity)
+            .expect(201)
+            .then((response) => expectObjectEq(entity, response.body));
         });
-    });
-  });
+      }
 
-  describe("GET /player/:id", () => {
-    it("should return a specific player", () => {
-      mockPlayerRepository.findOneBy.mockReturnValueOnce(mockEntity0);
-      return request(app.getHttpServer())
-        .get(`/player/${mockEntity0.id}`)
-        .expect(200)
-        .then((response) => expectObjectEq(mockEntity0, response.body));
-    });
-    it("should return 404 for non-existent player", () => {
-      return request(app.getHttpServer()).get(`/player/2`).expect(404);
-    });
-    it("should return 404 for non-numeric ID", () => {
-      return request(app.getHttpServer()).get("/player/abc").expect(404);
-    });
-    it("should return 404 for negative ID", () => {
-      return request(app.getHttpServer()).get("/player/-1").expect(404);
-    });
-    it("should return 404 for decimal ID", () => {
-      return request(app.getHttpServer()).get("/player/1.5").expect(404);
-    });
-  });
-
-  describe("PATCH /player/:id", () => {
-    it("should update", () => {
-      mockPlayerRepository.findOneBy.mockReturnValueOnce({});
-      return request(app.getHttpServer())
-        .patch(`/player/${mockEntityUpdate.id}`)
-        .send(mockEntityUpdate)
-        .expect(200)
-        .then((response) => expectObjectEq(mockEntityUpdate, response.body));
-    });
-    it("should update only first name", () => {
-      const partialUpdate = {
-        firstName: "NewFirstNameOnly",
-      };
-      mockPlayerRepository.findOneBy.mockReturnValueOnce(mockEntityUpdate);
-      return request(app.getHttpServer())
-        .patch(`/player/${mockEntityUpdate.id}`)
-        .send(partialUpdate)
-        .expect(200)
-        .then((response) => {
-          expectObjectEq(
-            {
-              ...mockEntityUpdate,
-              ...partialUpdate,
-            },
-            response.body,
-          );
+      const invalidEntities = [
+        ...test.invalidForCreateEntities,
+        ...test.invalidEntities,
+      ];
+      // ERR 400
+      for (const { entity, err } of invalidEntities) {
+        it(`should fail to create a ${test.name} because of ${err}`, () => {
+          return request(app.getHttpServer())
+            .post(url)
+            .send(entity)
+            .expect(400);
         });
-    });
-    it("should update only last name", () => {
-      const partialUpdate = {
-        lastName: "NewLastNameOnly",
-      };
-      mockPlayerRepository.findOneBy.mockReturnValueOnce(mockEntityUpdate);
-      return request(app.getHttpServer())
-        .patch(`/player/${mockEntityUpdate.id}`)
-        .send(partialUpdate)
-        .expect(200)
-        .then((response) => {
-          expectObjectEq(
-            {
-              ...mockEntityUpdate,
-              ...partialUpdate,
-            },
-            response.body,
-          );
-        });
-    });
-    it("should update only gender", () => {
-      const partialUpdate = {
-        gender: Gender.Other,
-      };
-      mockPlayerRepository.findOneBy.mockReturnValueOnce(mockEntityUpdate);
-      return request(app.getHttpServer())
-        .patch(`/player/${mockEntityUpdate.id}`)
-        .send(partialUpdate)
-        .expect(200)
-        .then((response) => {
-          expectObjectEq(
-            {
-              ...mockEntityUpdate,
-              ...partialUpdate,
-            },
-            response.body,
-          );
-        });
-    });
-    it("should return 404 when updating non-existent player", () => {
-      mockPlayerRepository.findOneBy.mockReturnValueOnce(null);
-      return request(app.getHttpServer())
-        .patch(`/player/99`)
-        .send({ firstName: "NewName" })
-        .expect(404);
-    });
-    it("should return 400 for invalid gender", () => {
-      return request(app.getHttpServer())
-        .patch(`/player/1`)
-        .send({ gender: "INVALID_GENDER_VALUE" })
-        .expect(400);
-    });
-    it("should return 400 for empty first name", () => {
-      return request(app.getHttpServer())
-        .patch(`/player/1`)
-        .send({ firstName: "" })
-        .expect(400);
-    });
-  });
-
-  describe("DELETE /player/:id", () => {
-    it("should delete a player successfully", () => {
-      mockPlayerRepository.existsBy.mockReturnValueOnce(true);
-      return request(app.getHttpServer()).delete(`/player/1`).expect(200);
-    });
-
-    it("should return 404 when deleting non-existent player", () => {
-      mockPlayerRepository.existsBy.mockReturnValueOnce(false);
-      return request(app.getHttpServer()).delete(`/player/1`).expect(404);
-    });
-  });
-
-  describe("auth", () => {
-    it("should protect all endpoints with JWT", async () => {
-      mockJwtGuard.canActivate.mockReturnValue(false);
-      const endpoints = [
-        { method: "get", path: "/player" },
-        { method: "get", path: "/player/1" },
-        { method: "post", path: "/player" },
-        { method: "patch", path: "/player/1" },
-        { method: "delete", path: "/player/1" },
-      ] as const;
-      const appServer = app.getHttpServer();
-      for (const endpoint of endpoints) {
-        await request(appServer)[endpoint.method](endpoint.path).expect(403);
       }
     });
+
+    describe(`GET ${url}`, () => {
+      // OK 200
+      it(`should return all ${test.name}s`, () => {
+        mockRepository.find.mockReturnValueOnce(test.entities);
+        return request(app.getHttpServer())
+          .get(url)
+          .expect(200)
+          .then((response) => {
+            expect(response.body).toBeInstanceOf(Array);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            expect(response.body.length).toBe(test.entities.length);
+            expectObjectEq(response.body, test.entities);
+          });
+      });
+    });
+
+    describe(`GET ${urlWithId(url, ":id")}`, () => {
+      // OK 200
+      it(`should return a ${test.name}`, () => {
+        const entity = test.entities[0];
+        mockRepository.findOneBy.mockReturnValueOnce(entity);
+        return request(app.getHttpServer())
+          .get(urlWithId(url, entity.id))
+          .expect(200)
+          .then((response) => expectObjectEq(entity, response.body));
+      });
+
+      // ERR 404
+      it(`should fail to return a ${test.name} with 404 because it does not exist`, () => {
+        return request(app.getHttpServer())
+          .get(urlWithId(url, 9999))
+          .expect(404);
+      });
+    });
+
+    describe(`PATCH ${urlWithId(url, ":id")}`, () => {
+      const entityToUpdate = test.entities[0];
+
+      // OK 200
+      it(`should update a ${test.name}`, () => {
+        mockRepository.findOneBy.mockReturnValueOnce(entityToUpdate);
+        return request(app.getHttpServer())
+          .patch(urlWithId(url, entityToUpdate.id))
+          .send(entityToUpdate)
+          .expect(200)
+          .then((response) => expectObjectEq(entityToUpdate, response.body));
+      });
+
+      // OK 200
+      for (const partialEntity of test.partialEntities) {
+        it(`should update select fields of a ${test.name}`, () => {
+          mockRepository.findOneBy.mockReturnValueOnce(entityToUpdate);
+          return request(app.getHttpServer())
+            .patch(urlWithId(url, entityToUpdate.id))
+            .send(partialEntity)
+            .expect(200)
+            .then((response) => {
+              expectObjectEq(
+                {
+                  ...entityToUpdate,
+                  ...partialEntity,
+                },
+                response.body,
+              );
+            });
+        });
+      }
+
+      // ERR 400
+      for (const { entity, err } of test.invalidEntities) {
+        it(`should fail to update a ${test.name} because of ${err}`, () => {
+          return request(app.getHttpServer())
+            .patch(urlWithId(url, 1))
+            .send(entity)
+            .expect(400);
+        });
+      }
+
+      // ERR 404
+      it(`should fail to update a ${test.name} with 404 because it does not exist`, () => {
+        return request(app.getHttpServer())
+          .patch(urlWithId(url, 9999))
+          .send(test.partialEntities[0])
+          .expect(404);
+      });
+    });
+
+    describe(`DELETE ${urlWithId(url, ":id")}`, () => {
+      // OK 200
+      it(`should delete a ${test.name}`, () => {
+        mockRepository.existsBy.mockReturnValueOnce(true);
+        return request(app.getHttpServer())
+          .delete(urlWithId(url, 1))
+          .expect(200);
+      });
+
+      // ERR 404
+      it(`should fail to delete a ${test.name} with 404 because it does not exist`, () => {
+        mockRepository.existsBy.mockReturnValueOnce(false);
+        return request(app.getHttpServer())
+          .delete(urlWithId(url, 1))
+          .expect(404);
+      });
+    });
+
+    describe("auth", () => {
+      it("should protect all endpoints with JWT", async () => {
+        mockJwtGuard.canActivate.mockReturnValue(false);
+        type Endpoint = {
+          method: "get" | "post" | "patch" | "delete";
+          path: string;
+        };
+        const endpoints: Endpoint[] = [
+          { method: "get", path: url },
+          { method: "post", path: url },
+          { method: "patch", path: urlWithId(url, 1) },
+          { method: "delete", path: urlWithId(url, 1) },
+        ];
+        if (test.getOneHasGuard ?? true) {
+          endpoints.push({ method: "get", path: urlWithId(url, 1) });
+        }
+        const appServer = app.getHttpServer();
+        for (const endpoint of endpoints) {
+          await request(appServer)[endpoint.method](endpoint.path).expect(403);
+        }
+      });
+    });
   });
-});
+}
