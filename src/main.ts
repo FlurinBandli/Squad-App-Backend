@@ -15,7 +15,6 @@ async function bootstrap() {
       stopAtFirstError: true,
       always: true,
       transformOptions: {
-        enableImplicitConversion: true,
         enableCircularCheck: true,
       },
     }),

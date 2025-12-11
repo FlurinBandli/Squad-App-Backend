@@ -1,13 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 import { Gender } from "../../../src/types";
 
 export class CreatePlayerDto {
   @ApiProperty({ description: "Vorname", example: "Sven" })
   @IsString()
+  @IsNotEmpty()
   firstName: string;
 
   @ApiProperty({ description: "Nachname", example: "Toye" })
+  @IsNotEmpty()
   @IsString()
   lastName: string;
 
