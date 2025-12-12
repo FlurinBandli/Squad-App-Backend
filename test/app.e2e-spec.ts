@@ -5,14 +5,34 @@ import { App } from "supertest/types";
 import { PlayerModule } from "../src/player/player.module";
 import { JwtGuard } from "../src/auth/jwt.guard";
 import { Player } from "../src/player/entities/player.entity";
-import { Gender } from "../src/types";
+import { Gender, Position } from "../src/types";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { EntityClassOrSchema } from "@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type";
 import { Trainer } from "../src/trainer/entities/trainer.entity";
 import { TrainerModule } from "../src/trainer/trainer.module";
+import { Squad } from "../src/squad/entities/squad.entity";
+import { SquadModule } from "../src/squad/squad.module";
+import { SquadPlayer } from "../src/squad-player/entities/squad-player.entity";
+import { SquadPlayerModule } from "../src/squad-player/squad-player.module";
 
+/** `expect(<left>).toBe(<right>)` that does deep comparisons so that Objects can be compared.
+ * The equality isn't communinicative, meaning that switching the inputs doesn't always give the same result.
+ * The first input may be "equal" to the second but the second might not be "equal" to the first.
+ * Instead equality means equality from the perspective of the first input.
+ */
 function expectObjectEq(a: unknown, b: unknown) {
-  if (a instanceof Object && a != null) {
+  if (a instanceof Date) {
+    // Special handling for Date.
+    // A Date is an Object but it doesn't have any keys so it always gives false positives.
+    // Instead we compare them as ISO date strings.
+    // JSON can't store dates and Nest serializes them into ISO date strings.
+    // If something isn't a date then we assume it's an ISO date string.
+    if (b instanceof Date) {
+      expect(a.toISOString()).toBe(b.toISOString());
+    } else {
+      expect(a.toISOString()).toBe(b);
+    }
+  } else if (a instanceof Object && a != null) {
     for (const key in a) {
       // @ts-expect-error object indexing
       expectObjectEq(a[key], b[key]);
@@ -25,8 +45,20 @@ function urlWithId(url: string, id: string | number): string {
   return `${url}/${id}`;
 }
 
-type MockEntity = { [key: string]: unknown };
-type MockTest = {
+function newMockRepository() {
+  return {
+    save: jest.fn((a): unknown => a),
+    find: jest.fn((): unknown[] => []),
+    findOneBy: jest.fn((): unknown => null),
+    existsBy: jest.fn(() => false),
+    update: jest.fn((a): unknown => a),
+    delete: jest.fn(() => false),
+    merge: jest.fn((a, b): unknown => ({ ...a, ...b })),
+  };
+}
+
+type MockEntity = { [key: string]: unknown; id: number };
+type MockTest<T = MockEntity> = {
   /** Name and url of test
    * @example "player"
    */
@@ -35,31 +67,39 @@ type MockTest = {
    * @example Player
    */
   entityClass: EntityClassOrSchema;
-  /** Entity module class
-   * @example PlayerModule
+  /** Entity classes that the entityClass depends on for its repository.
+   * @example [SquadPlayer]
+   * @default []
    */
-  entityModule: Type;
+  entityClassDepenedencies?: EntityClassOrSchema[];
+  /** Entity module class
+   * @example [PlayerModule]
+   */
+  entityModules: Type[];
   /** Valid entities */
-  entities: (MockEntity & { id: number })[];
+  entities: T[];
   /** Valid entities but only for updating */
-  partialEntities: MockEntity[];
+  partialEntities: Partial<T>[];
   /** Invalid entities but only for creating */
   invalidForCreateEntities: {
-    entity: MockEntity;
+    entity: Partial<T>;
     err: string;
   }[];
   /** Invalid entities */
   invalidEntities: {
-    entity: MockEntity;
+    entity: Partial<T>;
     err: string;
   }[];
+  /** If the `GET /<path>/:id` endpoint requires authentication
+   * @default true
+   */
   getOneHasGuard?: boolean;
 };
 
-const playerTests: MockTest = {
+const playerTests: MockTest<Player> = {
   name: "player",
   entityClass: Player,
-  entityModule: PlayerModule,
+  entityModules: [PlayerModule],
 
   entities: [
     { id: 1, firstName: "Karl", lastName: "Marx", gender: Gender.Other },
@@ -92,20 +132,24 @@ const playerTests: MockTest = {
       err: "empty last name",
     },
     {
-      entity: { firstName: "Test", lastName: "Player", gender: "INVALID" },
+      entity: {
+        firstName: "Test",
+        lastName: "Player",
+        gender: "INVALID" as Gender,
+      },
       err: "invalid gender value",
     },
     {
-      entity: { firstName: "Test", lastName: "Player", gender: "" },
+      entity: { firstName: "Test", lastName: "Player", gender: "" as Gender },
       err: "invalid gender value",
     },
   ],
 };
 
-const trainerTests: MockTest = {
+const trainerTests: MockTest<Trainer> = {
   name: "trainer",
   entityClass: Trainer,
-  entityModule: TrainerModule,
+  entityModules: [TrainerModule],
 
   entities: [
     { id: 1, firstName: "Yahya", lastName: "Sinwar", gender: Gender.Other },
@@ -137,16 +181,83 @@ const trainerTests: MockTest = {
       err: "empty last name",
     },
     {
-      entity: { firstName: "Test", lastName: "Player", gender: "INVALID" },
+      entity: {
+        firstName: "Test",
+        lastName: "Player",
+        gender: "INVALID" as Gender,
+      },
       err: "invalid gender value",
     },
     {
-      entity: { firstName: "Test", lastName: "Player", gender: "" },
+      entity: { firstName: "Test", lastName: "Player", gender: "" as Gender },
       err: "invalid gender value",
     },
   ],
 };
-const tests: MockTest[] = [playerTests, trainerTests];
+
+const squadTests: MockTest<
+  Omit<Squad, "squadPlayers"> & { squadPlayers: Omit<SquadPlayer, "squad">[] }
+> = {
+  name: "squad",
+  entityClass: Squad,
+  entityClassDepenedencies: [SquadPlayer],
+  entityModules: [SquadModule, SquadPlayerModule],
+  entities: [
+    {
+      id: 1,
+      name: "Squad",
+      description: "Desc",
+      date: new Date(),
+      trainer: trainerTests.entities,
+      squadPlayers: [
+        {
+          id: 1,
+          player: playerTests.entities[0],
+          position: Position.Defender,
+        },
+        {
+          id: 2,
+          player: playerTests.entities[1],
+          position: Position.Goalkeeper,
+        },
+      ],
+    },
+  ],
+  partialEntities: [
+    { name: "Abc", trainer: trainerTests.entities },
+    { description: "Desc" },
+    { date: new Date(2025, 11, 13) },
+    {
+      squadPlayers: [
+        {
+          id: 1,
+          player: playerTests.entities[0],
+          position: Position.Defender,
+        },
+      ],
+    },
+  ],
+  invalidForCreateEntities: [
+    { entity: {}, err: "missing fields" },
+    {
+      entity: {
+        name: "Name",
+        description: "Desc",
+        trainer: [],
+        date: new Date(),
+      },
+      err: "missing squad players",
+    },
+  ],
+  invalidEntities: [{ entity: { name: "" }, err: "empty name" }],
+  getOneHasGuard: false,
+};
+
+const tests: MockTest[] = [
+  playerTests as unknown as MockTest,
+  trainerTests as unknown as MockTest,
+  squadTests as unknown as MockTest,
+];
 
 for (const test of tests) {
   describe(test.name, () => {
@@ -157,22 +268,22 @@ for (const test of tests) {
       canActivate: jest.fn(() => true),
     };
 
-    const mockRepository = {
-      save: jest.fn((a): unknown => a),
-      find: jest.fn((): unknown[] => []),
-      findOneBy: jest.fn((): unknown => null),
-      existsBy: jest.fn(() => false),
-      update: jest.fn((a): unknown => a),
-      delete: jest.fn(() => false),
-      merge: jest.fn((a, b): unknown => ({ ...a, ...b })),
-    };
+    const mockRepository = newMockRepository();
 
     beforeAll(async () => {
-      const moduleFixture: TestingModule = await Test.createTestingModule({
-        imports: [test.entityModule],
+      const moduleFixture0 = Test.createTestingModule({
+        imports: test.entityModules,
       })
         .overrideProvider(getRepositoryToken(test.entityClass))
-        .useValue(mockRepository)
+        .useValue(mockRepository);
+      if (test.entityClassDepenedencies) {
+        for (const entityClassDepenedency of test.entityClassDepenedencies) {
+          moduleFixture0
+            .overrideProvider(getRepositoryToken(entityClassDepenedency))
+            .useValue(newMockRepository());
+        }
+      }
+      const moduleFixture: TestingModule = await moduleFixture0
         .overrideGuard(JwtGuard)
         .useValue(mockJwtGuard)
         .compile();
@@ -235,7 +346,7 @@ for (const test of tests) {
             expect(response.body).toBeInstanceOf(Array);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             expect(response.body.length).toBe(test.entities.length);
-            expectObjectEq(response.body, test.entities);
+            expectObjectEq(test.entities, response.body);
           });
       });
     });
