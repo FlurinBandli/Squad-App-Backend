@@ -1,7 +1,7 @@
 #{
   set table.hline(stroke: 2pt)
 
-  let schema = json("api.json")
+  let schema = yaml("openapi.yaml")
   let components = schema.components
   let display-schema(schema) = {
     let schema-type = schema.at("type", default: none)

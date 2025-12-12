@@ -1,0 +1,701 @@
+openapi: 3.0.0
+paths:
+  /api/auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '201':
+          description: Login erfolgreich
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwtDto'
+        '401':
+          description: Nicht berechtigt
+      tags:
+        - Auth
+  /api/player:
+    post:
+      operationId: PlayerController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePlayerDto'
+      responses:
+        '201':
+          description: Spieler erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '401':
+          description: ''
+      security:
+        - bearer: []
+      summary: Erstelle einen Spieler
+      tags:
+        - Player
+    get:
+      operationId: PlayerController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: Alle Spieler ausgelesen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+        '401':
+          description: ''
+      security:
+        - bearer: []
+      summary: Lese alle Spieler aus
+      tags:
+        - Player
+  /api/player/{id}:
+    get:
+      operationId: PlayerController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Spieler ausgelesen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '401':
+          description: ''
+        '404':
+          description: Spieler existiert nicht
+      security:
+        - bearer: []
+      summary: Lese einen Spieler aus
+      tags:
+        - Player
+    patch:
+      operationId: PlayerController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePlayerDto'
+      responses:
+        '200':
+          description: Spieler bearbeitet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+        '401':
+          description: ''
+        '404':
+          description: Spieler existiert nicht
+      security:
+        - bearer: []
+      summary: Bearbeite einen Spieler
+      tags:
+        - Player
+    delete:
+      operationId: PlayerController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Spieler gelöscht
+        '401':
+          description: ''
+        '404':
+          description: Spieler existiert nicht
+      security:
+        - bearer: []
+      summary: Lösche einen Spieler
+      tags:
+        - Player
+  /api/trainer:
+    post:
+      operationId: TrainerController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTrainerDto'
+      responses:
+        '201':
+          description: Trainer erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trainer'
+        '401':
+          description: ''
+      security:
+        - bearer: []
+      summary: Erstelle einen Trainer
+      tags:
+        - Trainer
+    get:
+      operationId: TrainerController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: Alle Trainer ausgelesen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trainer'
+        '401':
+          description: ''
+      security:
+        - bearer: []
+      summary: Lese alle Trainer aus
+      tags:
+        - Trainer
+  /api/trainer/{id}:
+    get:
+      operationId: TrainerController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Trainer ausgelesen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trainer'
+        '401':
+          description: ''
+        '404':
+          description: Trainer existiert nicht
+      security:
+        - bearer: []
+      summary: Lese einen Trainer aus
+      tags:
+        - Trainer
+    patch:
+      operationId: TrainerController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTrainerDto'
+      responses:
+        '200':
+          description: Trainer bearbeitet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trainer'
+        '401':
+          description: ''
+        '404':
+          description: Trainer existiert nicht
+      security:
+        - bearer: []
+      summary: Bearbeite einen Trainer
+      tags:
+        - Trainer
+    delete:
+      operationId: TrainerController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Trainer gelöscht
+        '401':
+          description: ''
+        '404':
+          description: Trainer existiert nicht
+      security:
+        - bearer: []
+      summary: Lösche einen Trainer
+      tags:
+        - Trainer
+  /api/squad:
+    post:
+      operationId: SquadController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSquadDto'
+      responses:
+        '201':
+          description: Squad erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Squad'
+        '401':
+          description: ''
+      security:
+        - bearer: []
+      summary: Erstelle einen Squad
+      tags:
+        - Squad
+    get:
+      operationId: SquadController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: Alle Squads ausgelesen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Squad'
+        '401':
+          description: ''
+      security:
+        - bearer: []
+      summary: Lese alle Squad aus
+      tags:
+        - Squad
+  /api/squad/{id}:
+    get:
+      operationId: SquadController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Squad ausgelesen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Squad'
+        '404':
+          description: Squad existiert nicht
+      summary: Lese einen Squad aus
+      tags:
+        - Squad
+    patch:
+      operationId: SquadController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSquadDto'
+      responses:
+        '200':
+          description: Squad bearbeitet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Squad'
+        '401':
+          description: ''
+        '404':
+          description: Squad existiert nicht
+      security:
+        - bearer: []
+      summary: Bearbeite einen Squad
+      tags:
+        - Squad
+    delete:
+      operationId: SquadController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Squad gelöscht
+        '401':
+          description: ''
+        '404':
+          description: Squad existiert nicht
+      security:
+        - bearer: []
+      summary: Lösche einen Squad
+      tags:
+        - Squad
+info:
+  title: Teamkader App
+  description: >-
+    Der Fussballverein des VfB Zürich-Leutschenbach verschickt zu jedem Spieltag
+    seiner Jugendmannschaften eine Email an die Spieler/-innen und deren Eltern,
+    in der der jeweilige Mannschaftskader bekannt gegeben wird.
+  version: '1.0'
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    LoginDto:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Benutzername
+          example: username
+        password:
+          type: string
+          description: Passwort
+          example: password
+      required:
+        - username
+        - password
+    JwtDto:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: JSON Web Token
+      required:
+        - accessToken
+    CreatePlayerDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Vorname
+          example: Sven
+        lastName:
+          type: string
+          description: Nachname
+          example: Toye
+        gender:
+          enum:
+            - Male
+            - Female
+            - Other
+          type: string
+          description: Geschlecht
+      required:
+        - firstName
+        - lastName
+        - gender
+    Player:
+      type: object
+      properties:
+        id:
+          type: number
+          description: ID
+          example: 1
+        firstName:
+          type: string
+          description: Vorname
+          example: Sven
+        lastName:
+          type: string
+          description: Nachname
+          example: Toye
+        gender:
+          enum:
+            - Male
+            - Female
+            - Other
+          type: string
+          description: Geschlecht
+      required:
+        - id
+        - firstName
+        - lastName
+        - gender
+    UpdatePlayerDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Vorname
+          example: Sven
+        lastName:
+          type: string
+          description: Nachname
+          example: Toye
+        gender:
+          enum:
+            - Male
+            - Female
+            - Other
+          type: string
+          description: Geschlecht
+    CreateTrainerDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Vorname
+          example: Sven
+        lastName:
+          type: string
+          description: Nachname
+          example: Toye
+        gender:
+          enum:
+            - Male
+            - Female
+            - Other
+          type: string
+          description: Geschlecht
+      required:
+        - firstName
+        - lastName
+        - gender
+    Trainer:
+      type: object
+      properties:
+        id:
+          type: number
+          description: ID
+          example: 1
+        firstName:
+          type: string
+          description: Vorname
+          example: Sven
+        lastName:
+          type: string
+          description: Nachname
+          example: Toye
+        gender:
+          enum:
+            - Male
+            - Female
+            - Other
+          type: string
+          description: Geschlecht
+      required:
+        - id
+        - firstName
+        - lastName
+        - gender
+    UpdateTrainerDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Vorname
+          example: Sven
+        lastName:
+          type: string
+          description: Nachname
+          example: Toye
+        gender:
+          enum:
+            - Male
+            - Female
+            - Other
+          type: string
+          description: Geschlecht
+    TrainerId:
+      type: object
+      properties:
+        id:
+          type: number
+          minimum: 1
+          description: ID
+          example: 1
+      required:
+        - id
+    PlayerId:
+      type: object
+      properties:
+        id:
+          type: number
+          minimum: 1
+          description: ID
+          example: 1
+      required:
+        - id
+    SquadSquadPlayerDto:
+      type: object
+      properties:
+        player:
+          description: Spieler
+          allOf:
+            - $ref: '#/components/schemas/PlayerId'
+        position:
+          enum:
+            - Goalkeeper
+            - Defender
+            - Midfielder
+            - Striker
+            - Backup
+          type: string
+          description: Position vom Spieler
+      required:
+        - player
+        - position
+    CreateSquadDto:
+      type: object
+      properties:
+        trainer:
+          description: Trainer für diesen Squad
+          type: array
+          items:
+            $ref: '#/components/schemas/TrainerId'
+        name:
+          type: string
+          description: Name
+          example: FC Zürich
+        description:
+          type: string
+          description: Beschreibung
+          example: Seit 1896.
+        date:
+          format: date-time
+          type: string
+          description: Erstellungsdatum
+        squadPlayers:
+          description: Spieler mit ihren Positionen in diesem Team
+          type: array
+          items:
+            $ref: '#/components/schemas/SquadSquadPlayerDto'
+      required:
+        - trainer
+        - name
+        - description
+        - date
+        - squadPlayers
+    SquadPlayer:
+      type: object
+      properties:
+        id:
+          type: number
+          description: ID
+          example: 1
+        player:
+          description: Spieler
+          allOf:
+            - $ref: '#/components/schemas/Player'
+        position:
+          enum:
+            - Goalkeeper
+            - Defender
+            - Midfielder
+            - Striker
+            - Backup
+          type: string
+          description: Position vom Spieler
+      required:
+        - id
+        - player
+        - position
+    Squad:
+      type: object
+      properties:
+        id:
+          type: number
+          description: ID
+          example: 1
+        trainer:
+          description: Trainer für diesen Squad
+          type: array
+          items:
+            $ref: '#/components/schemas/Trainer'
+        name:
+          type: string
+          description: Name
+          example: FC Zürich
+        description:
+          type: string
+          description: Beschreibung
+          example: Seit 1896.
+        date:
+          format: date-time
+          type: string
+          description: Erstellungsdatum
+        squadPlayers:
+          description: Spieler mit ihren Positionen in diesem Team
+          type: array
+          items:
+            $ref: '#/components/schemas/SquadPlayer'
+      required:
+        - id
+        - trainer
+        - name
+        - description
+        - date
+        - squadPlayers
+    UpdateSquadDto:
+      type: object
+      properties:
+        trainer:
+          description: Trainer für diesen Squad
+          type: array
+          items:
+            $ref: '#/components/schemas/TrainerId'
+        name:
+          type: string
+          description: Name
+          example: FC Zürich
+        description:
+          type: string
+          description: Beschreibung
+          example: Seit 1896.
+        date:
+          format: date-time
+          type: string
+          description: Erstellungsdatum
+        squadPlayers:
+          description: Spieler mit ihren Positionen in diesem Team
+          type: array
+          items:
+            $ref: '#/components/schemas/SquadSquadPlayerDto'
