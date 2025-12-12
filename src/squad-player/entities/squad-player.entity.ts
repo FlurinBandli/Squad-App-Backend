@@ -44,6 +44,6 @@ export class SquadPlayer {
   squad: Squad;
 
   @ApiProperty({ description: "Position vom Spieler" })
-  @Column()
+  @Column({ type: "enum", enum: Position })
   position: Position;
 }

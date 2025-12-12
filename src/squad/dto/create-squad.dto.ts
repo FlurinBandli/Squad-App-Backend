@@ -46,7 +46,7 @@ export class CreateSquadDto {
   @ValidateNested()
   @IsInstance(TrainerId, { each: true })
   @Type(() => TrainerId)
-  trainer: TrainerId[];
+  trainers: TrainerId[];
 
   @ApiProperty({ description: "Name", example: "FC Zürich" })
   @IsString()

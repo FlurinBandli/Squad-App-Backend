@@ -208,7 +208,7 @@ const squadTests: MockTest<
       name: "Squad",
       description: "Desc",
       date: new Date(),
-      trainer: trainerTests.entities,
+      trainers: trainerTests.entities,
       squadPlayers: [
         {
           id: 1,
@@ -224,7 +224,7 @@ const squadTests: MockTest<
     },
   ],
   partialEntities: [
-    { name: "Abc", trainer: trainerTests.entities },
+    { name: "Abc", trainers: trainerTests.entities },
     { description: "Desc" },
     { date: new Date(2025, 11, 13) },
     {
@@ -243,7 +243,7 @@ const squadTests: MockTest<
       entity: {
         name: "Name",
         description: "Desc",
-        trainer: [],
+        trainers: [],
         date: new Date(),
       },
       err: "missing squad players",

@@ -32,7 +32,7 @@ export class Squad {
     nullable: false,
   })
   @JoinTable()
-  trainer: Trainer[];
+  trainers: Trainer[];
 
   @ApiProperty({ description: "Name", example: "FC Zürich" })
   @Column({ length: 255 })

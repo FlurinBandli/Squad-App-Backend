@@ -19,6 +19,6 @@ export class Trainer {
   lastName: string;
 
   @ApiProperty({ description: "Geschlecht" })
-  @Column()
+  @Column({ type: "enum", enum: Gender })
   gender: Gender;
 }
