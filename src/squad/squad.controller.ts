@@ -15,7 +15,7 @@ import { SquadService } from "./squad.service";
 import { CreateSquadDto } from "./dto/create-squad.dto";
 import { UpdateSquadDto } from "./dto/update-squad.dto";
 import { Squad } from "./entities/squad.entity";
-import { JwtGuard } from "src/auth/jwt.guard";
+import { JwtGuard } from "../../src/auth/jwt.guard";
 import {
   ApiBearerAuth,
   ApiCreatedResponse,

@@ -1,5 +1,3 @@
-import { Type } from "class-transformer";
-import { IsInstance, ValidateNested } from "class-validator";
 import { SquadPlayer } from "../../squad-player/entities/squad-player.entity";
 import { Trainer } from "../../trainer/entities/trainer.entity";
 import {
@@ -12,7 +10,9 @@ import {
 } from "typeorm";
 import { CreateSquadDto } from "../dto/create-squad.dto";
 import { ApiProperty } from "@nestjs/swagger";
+import { SerializeOptions } from "@nestjs/common";
 
+@SerializeOptions({ excludeExtraneousValues: true })
 @Entity()
 export class Squad {
   static new(squad: Squad & CreateSquadDto): Squad {
@@ -26,13 +26,10 @@ export class Squad {
   id: number;
 
   @ApiProperty({ description: "Trainer für diesen Squad" })
-  @IsInstance(Trainer, { each: true })
-  @ValidateNested()
-  @Type(() => Trainer)
   @ManyToMany(() => Trainer, {
     eager: true,
     cascade: true,
-    // nullable: false,
+    nullable: false,
   })
   @JoinTable()
   trainer: Trainer[];
@@ -50,9 +47,6 @@ export class Squad {
   date: Date;
 
   @ApiProperty({ description: "Spieler mit ihren Positionen in diesem Team" })
-  @IsInstance(SquadPlayer, { each: true })
-  @ValidateNested()
-  @Type(() => SquadPlayer)
   @OneToMany(() => SquadPlayer, (squadPlayer) => squadPlayer.squad, {
     eager: true,
     cascade: true,

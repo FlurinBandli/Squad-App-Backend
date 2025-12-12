@@ -3,7 +3,7 @@ import { SquadService } from "./squad.service";
 import { SquadController } from "./squad.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Squad } from "./entities/squad.entity";
-import { SquadPlayer } from "src/squad-player/entities/squad-player.entity";
+import { SquadPlayer } from "../../src/squad-player/entities/squad-player.entity";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Squad, SquadPlayer])],

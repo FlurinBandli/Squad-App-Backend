@@ -1,7 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Gender } from "src/types";
+import { Gender } from "../../../src/types";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { SerializeOptions } from "@nestjs/common";
 
+@SerializeOptions({ excludeExtraneousValues: true })
 @Entity()
 export class Trainer {
   @ApiProperty({ description: "ID", example: 1 })

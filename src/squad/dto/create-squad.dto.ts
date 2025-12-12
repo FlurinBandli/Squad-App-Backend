@@ -1,41 +1,56 @@
-import { Position } from "src/types";
+import { Position } from "../../../src/types";
 import {
   IsDate,
   IsInstance,
-  IsNumber,
+  IsInt,
+  IsNotEmpty,
+  IsPositive,
   IsString,
   ValidateNested,
 } from "class-validator";
 import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
+import { SerializeOptions } from "@nestjs/common";
 
+@SerializeOptions({ excludeExtraneousValues: true })
 class PlayerId {
   @ApiProperty({ description: "ID", example: 1 })
-  @IsNumber()
-  id: number;
-}
-class TrainerId {
-  @ApiProperty({ description: "ID", example: 1 })
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
   id: number;
 }
 
+@SerializeOptions({ excludeExtraneousValues: true })
+class TrainerId {
+  @ApiProperty({ description: "ID", example: 1 })
+  @IsInt()
+  @IsPositive()
+  id: number;
+}
+
+@SerializeOptions({ excludeExtraneousValues: true })
 class SquadSquadPlayerDto {
   @ApiProperty({ description: "Spieler" })
+  @ValidateNested()
+  @IsInstance(PlayerId)
+  @Type(() => PlayerId)
   player: PlayerId;
+
   @ApiProperty({ description: "Position vom Spieler" })
   position: Position;
 }
 
+@SerializeOptions({ excludeExtraneousValues: true })
 export class CreateSquadDto {
   @ApiProperty({ description: "Trainer für diesen Squad" })
-  @IsInstance(TrainerId, { each: true })
   @ValidateNested()
+  @IsInstance(TrainerId, { each: true })
   @Type(() => TrainerId)
   trainer: TrainerId[];
 
   @ApiProperty({ description: "Name", example: "FC Zürich" })
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty({ description: "Beschreibung", example: "Seit 1896." })
@@ -44,11 +59,12 @@ export class CreateSquadDto {
 
   @ApiProperty({ description: "Erstellungsdatum" })
   @IsDate()
+  @Type(() => Date)
   date: Date;
 
   @ApiProperty({ description: "Spieler mit ihren Positionen in diesem Team" })
+  @ValidateNested()
   @IsInstance(SquadSquadPlayerDto, { each: true })
-  @ValidateNested({ always: true })
   @Type(() => SquadSquadPlayerDto)
   squadPlayers: SquadSquadPlayerDto[];
 }

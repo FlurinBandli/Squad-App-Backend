@@ -15,7 +15,7 @@ import { TrainerService } from "./trainer.service";
 import { CreateTrainerDto } from "./dto/create-trainer.dto";
 import { UpdateTrainerDto } from "./dto/update-trainer.dto";
 import { Trainer } from "./entities/trainer.entity";
-import { JwtGuard } from "src/auth/jwt.guard";
+import { JwtGuard } from "../../src/auth/jwt.guard";
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
