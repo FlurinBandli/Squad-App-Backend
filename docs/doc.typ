@@ -1,7 +1,4 @@
-// TODO:
-// - Endpunkte definieren in Tabelle
-// - Mehere Trainers pro Team
-// - Arbeitsprotokoll 4.12.
+#import "tools.typ": show-date-long, show-date-weekday, show-date-weekday-mini
 
 #set page(
   header: [
@@ -36,24 +33,6 @@
 
 #let show-criteria = false
 // #let show-criteria = true
-
-#let show-date-long(year, month, day) = {
-  let date = datetime(year: year, month: month, day: day)
-  let weekday = date.weekday()
-  let show-weekday = if weekday == 1 [Montag] else if (
-    weekday == 2
-  ) [Dienstag] else if (
-    weekday == 3
-  ) [Mittwoch] else if (
-    weekday == 4
-  ) [Donnerstag] else if (
-    weekday == 5
-  ) [Freitag] else if (
-    weekday == 6
-  ) [Samstag] else [Sonntag]
-  [#show-weekday, #date.display("[day].[month].[year]")]
-}
-
 
 #heading(outlined: false)[Individuelle Praktische Arbeit]
 #set heading(numbering: "1.1.")

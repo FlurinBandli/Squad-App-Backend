@@ -1,133 +1,53 @@
-#set page(paper: "a3", flipped: true)
+#import "tools.typ": show-date-mini, show-date-weekday-mini
 
-#let show-date-mini(year, month, day) = {
-  let date = datetime(year: year, month: month, day: day)
-  date.display("[day].[month]")
-}
+#set page(paper: "a3", flipped: true)
 
 #let hours-in-unit = 2
 #let timeplan-data-dates = (
   // week 1
-  (show-date-mini(2025, 12, 1), 8 / hours-in-unit),
-  (show-date-mini(2025, 12, 2), 4 / hours-in-unit),
-  (show-date-mini(2025, 12, 3), 8 / hours-in-unit),
-  (show-date-mini(2025, 12, 4), 8 / hours-in-unit),
-  (show-date-mini(2025, 12, 5), 8 / hours-in-unit),
+  ((2025, 12, 1), 8),
+  ((2025, 12, 2), 4),
+  ((2025, 12, 3), 8),
+  ((2025, 12, 4), 8),
+  ((2025, 12, 5), 8),
   // week 2
-  (show-date-mini(2025, 12, 8), 8 / hours-in-unit),
-  (show-date-mini(2025, 12, 9), 4 / hours-in-unit),
-  (show-date-mini(2025, 12, 10), 8 / hours-in-unit),
-  (show-date-mini(2025, 12, 11), 8 / hours-in-unit),
-  (show-date-mini(2025, 12, 12), 8 / hours-in-unit),
+  ((2025, 12, 8), 8),
+  ((2025, 12, 9), 4),
+  ((2025, 12, 10), 8),
+  ((2025, 12, 11), 8),
+  ((2025, 12, 12), 8),
   // week 3
-  (show-date-mini(2025, 12, 15), 8 / hours-in-unit),
-).map(((date, len)) => (date, int(len)))
+  ((2025, 12, 15), 8),
+).map((((year, month, day), len)) => (datetime(year: year, month: month, day: day), int(len / hours-in-unit)))
 
 #let len = timeplan-data-dates.map(((_, len)) => len).reduce((acc, len) => acc + len)
-#let timeplan-data-lens = range(len).map(len => [#{ len * hours-in-unit }])
-// #let timeplan-data-lens = range(len).map(len => [#{ (len + 1) * hours-in-unit }])
-// #let timeplan-data-lens = timeplan-data-dates.map(((_, len)) => range(len).map(len => [#{ (len + 1) * 2 }]))
+#let timeplan-data-lens = range(len).map(len => [#{ (len + 1) * hours-in-unit }])
+
+#let timeplan-data = toml("zeitplan.toml")
 
 #let timeplan-data = (
-  (
-    [],
-    (
-      (
-        [Arbeitsjournal führen],
-        (
-          ("s", 5, 1),
-          ("s", 8, 2),
-          ("b", 12, 2),
-          ("i", 14, 1),
-          ("b", 16, 1),
-          ("s", 17, 1),
-          ("i", 18, 1),
-          ("s", 20, 2),
-          ("s", 23, 1),
-          ("i", 24, 2),
-          ("s", 26, 2),
-          ("s", 30, 2),
-          ("s", 34, 2),
-          ("s", 38, 2),
-        ),
-      ),
-      ([Expertenbesuche], ()),
-    ),
-  ),
-  (
-    [Informieren],
-    (
-      ([Informationen sammeln], (("b", 0, 1),)),
-    ),
-  ),
-  (
-    [Planen],
-    (
-      (
-        [Planen + ERD erstellen],
-        (("b", 1, 1),),
-      ),
-    ),
-  ),
-  (
-    [Entscheiden],
-    (
-      ([Lösungsvariante festlegen], (("b", 2, 1),)),
-    ),
-  ),
-  (
-    [Realisieren],
-    (
-      ([Entities], (("b", 3, 1),)),
-      ([Requests], (("s", 4, 1), ("i", 6, 1))),
-      ([Services], (("s", 6, 1), ("i", 7, 1), ("i", 11, 1))),
-      ([Controllers], (("s", 7, 1), ("i", 8, 1), ("i", 21, 1))),
-      ([Relationen], (("i", 9, 1), ("b", 10, 1), ("i", 23, 1))),
-      ([Datenbank], (("i", 4, 1), ("s", 11, 1))),
-      ([Migrationen], (("i", 5, 1), ("s", 14, 1))),
-      ([Authentifizierung], (("b", 15, 1), ("i", 17, 1), ("s", 18, 1))),
-      ([Swagger], (("b", 19, 1), ("i", 20, 1), ("i", 22, 1))),
-    ),
-  ),
-  (
-    [Kontrollieren],
-    (
-      ([Fehlerbehebung], (("s", 22, 1), ("s", 28, 2), ("i", 31, 1), ("i", 33, 3))),
-      ([Testen], (("s", 24, 2), ("i", 26, 5), ("i", 32, 1))),
-    ),
-  ),
-  (
-    [Auswerten],
-    (
-      ([Reflexion & Fazit], (("s", 32, 1),)),
-    ),
-  ),
-  (
-    [],
-    (
-      ([Dokumentation abschliesen], (("s", 33, 1),)),
-      ([Puffer], (("s", 36, 2),)),
-    ),
-  ),
-)
+  timeplan-data
+    .pairs()
+    .map(((title, rows)) => {
+      let rows = rows
+        .pairs()
+        .map(((title, columns)) => {
+          let columns = columns.fold((), (table-columns, (column-type, column-start, column-len)) => {
+            (
+              ..table-columns,
+              ..range(column-start - table-columns.len()).map(_ => " "),
+              ..range(column-len).map(_ => column-type),
+            )
+          })
+          let ist-zeit = columns.filter(c => (c == "i" or c == "b")).len() * hours-in-unit
+          let soll-zeit = columns.filter(c => (c == "s" or c == "b")).len() * hours-in-unit
+          let columns = (..columns, ..range((columns).len(), len).map(_ => " "))
 
-#let timeplan-data = timeplan-data.map(((title, rows)) => {
-  let rows = rows.map(((title, columns)) => {
-    let columns = columns.fold((), (table-columns, (column-type, column-start, column-len)) => {
-      (
-        ..table-columns,
-        ..range(column-start - table-columns.len()).map(_ => " "),
-        ..range(column-len).map(_ => column-type),
-      )
+          (title: title, ist-zeit: ist-zeit, soll-zeit: soll-zeit, columns: columns)
+        })
+      (title, rows)
     })
-    let ist-zeit = columns.filter(c => (c == "i" or c == "b")).len() * hours-in-unit
-    let soll-zeit = columns.filter(c => (c == "s" or c == "b")).len() * hours-in-unit
-    let columns = (..columns, ..range((columns).len(), len).map(_ => " "))
-
-    (title: title, ist-zeit: ist-zeit, soll-zeit: soll-zeit, columns: columns)
-  })
-  (title, rows)
-})
+)
 #let ist-zeit = (
   timeplan-data.map(((_, rows)) => rows.map(((ist-zeit,)) => ist-zeit)).flatten().reduce((a, b) => a + b)
 )
@@ -176,10 +96,12 @@
 
   table.cell(colspan: 4)[],
   table.vline(),
-
   ..timeplan-data-dates
     .map(((date, len)) => (
-      table.cell(colspan: len, date),
+      table.cell(colspan: len)[
+        #show-date-mini(date) \
+        #show-date-weekday-mini(date)
+      ],
       table.vline(),
     ))
     .flatten(),
