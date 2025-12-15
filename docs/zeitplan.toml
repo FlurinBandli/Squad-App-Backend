@@ -71,6 +71,11 @@
     36,
     2,
   ],
+  [
+    "i",
+    37,
+    1,
+  ],
 ]
 Expertenbesuche = [["b", 11, 1]]
 
@@ -102,5 +107,5 @@ Testen = [["s", 24, 2], ["i", 26, 5], ["i", 32, 1]]
 "Reflexion & Fazit" = [["s", 38, 1]]
 
 ["(Abschliessen)"]
-"Dokumentation abschliesen" = [["s", 39, 1]]
+"Dokumentation abschliesen" = [["b", 39, 1]]
 Puffer = [["s", 32, 2]]
