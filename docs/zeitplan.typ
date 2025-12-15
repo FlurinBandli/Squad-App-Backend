@@ -1,6 +1,7 @@
 #import "tools.typ": show-date-mini, show-date-weekday-mini
 
 #set page(paper: "a3", flipped: true)
+#set text(font: "Arial")
 
 #let hours-in-unit = 2
 #let timeplan-data-dates = (
@@ -56,7 +57,7 @@
 )
 #let ist-zeit-color = red
 #let soll-zeit-color = blue
-#let both-color = purple
+#let both-color = green
 #let computed-timeplan-data = timeplan-data.map(((title, rows)) => {
   (
     table.cell(rowspan: rows.len(), align: right, emph(title)),

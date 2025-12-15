@@ -1,5 +1,6 @@
 #import "tools.typ": show-date-long, show-date-weekday, show-date-weekday-mini
 
+
 #set page(
   header: [
     #set text(size: 8pt)
@@ -27,8 +28,8 @@
 #show link: underline
 #show link: text.with(fill: blue)
 
-#let hauptexperte = "Linus Torvalds"
-#let nebenexperte = "Richard Stallman"
+#let hauptexperte = "Artjan Illi"
+#let nebenexperte = "-"
 #let berufsbildner = "René Bach"
 
 #let show-criteria = false
