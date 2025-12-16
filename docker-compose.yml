@@ -1,4 +1,9 @@
 services:
+  backend:
+    build: .
+    env_file: ".env"
+    environment:
+      DATABASE_HOST: db
   db:
     image: mysql:latest
     # command: '--default-authentication-plugin=mysql_native_password'
@@ -10,13 +15,13 @@ services:
       MYSQL_DATABASE: ${DATABASE_NAME}
       MYSQL_USER: ${DATABASE_USERNAME}
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-      MYSQL_HOST: ${DATABASE_HOST}
-      MYSQL_PORT: ${DATABASE_PORT}
-    expose:
-      - 3306
-      - 33060
+      # MYSQL_HOST: ${DATABASE_HOST}
+      # MYSQL_PORT: ${DATABASE_PORT}
     ports:
       - "3306:3306"
+    # expose:
+    #   - 3306
+    #   - 33060
   db_dashboard:
     image: phpmyadmin:latest
     restart: always

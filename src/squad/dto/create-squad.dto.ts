@@ -1,4 +1,4 @@
-import { Position } from "../../../src/types";
+import { Position } from "../../types";
 import {
   IsDate,
   IsInstance,

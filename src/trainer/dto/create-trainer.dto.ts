@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
-import { Gender } from "../../../src/types";
+import { Gender } from "../../types";
 import { SerializeOptions } from "@nestjs/common";
 
 @SerializeOptions({ excludeExtraneousValues: true })
