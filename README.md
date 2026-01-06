@@ -6,48 +6,51 @@
 git clone https://git.twofold.dev/sventoye/squad-app-backend.git
 ```
 
-## Setup
-
-```bash
-pnpm install
-```
-
 ## Requirements
 
 - [docker](https://docs.docker.com/desktop/)
-- [node](https://nodejs.org/en/download)
-- [pnpm](https://pnpm.io/installation#using-npm)
+- [node](https://nodejs.org/en/download) (for local deployment only)
+- npm or [pnpm](https://pnpm.io/installation#using-npm) (for local deployment only)
+
+## Setup (for local deployment only)
+
+```bash
+npm install
+```
 
 ## Usage
 
-### Compile and run the project
+### Compile and run the project in Docker
 
 ```bash
-# development
-pnpm run start
-
-# watch mode
-pnpm run start:dev
-
-# production mode
-pnpm run start:prod
+docker compose up db --build
 ```
 
-### Run the database docker container
+### Compile and run the project locally (prefer Docker deployment)
 
 ```bash
-docker compose up --build
+# Run the database Docker container
+docker compose up db --build
+
+# development
+npm run start
+
+# watch mode
+npm run start:dev
+
+# production mode
+npm run start:prod
 ```
 
 ### Run tests
 
 ```bash
 # unit tests
-pnpm run test
+npm run test
 
 # e2e tests
-pnpm run test:e2e
+npm run test:e2e
 
 # test coverage
-pnpm run test:cov
+npm run test:cov
 ```
