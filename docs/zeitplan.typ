@@ -1,7 +1,7 @@
 #import "tools.typ": show-date-mini, show-date-weekday-mini
 
 #set page(paper: "a3", flipped: true)
-#set text(font: "Arial")
+#set text(font: "FreeSans")
 
 #let hours-in-unit = 2
 #let timeplan-data-dates = (

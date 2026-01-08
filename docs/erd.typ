@@ -2,7 +2,7 @@
 
 #set page(height: auto, width: auto)
 #set grid(stroke: 1pt, inset: .5em, columns: 2)
-#show grid: set text(font: "Consolas")
+#show grid: set text(font: "Cascadia Code")
 
 #diagram(
   node-inset: 0pt,

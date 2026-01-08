@@ -1,6 +1,5 @@
 #import "tools.typ": show-date-long, show-date-weekday, show-date-weekday-mini
 
-
 #set page(
   header: [
     #set text(size: 8pt)
@@ -14,7 +13,7 @@
   ],
   footer: context [
     #set text(size: 8pt)
-    Seite #counter(page).display("1 | 1", both: true)
+    Seite #counter(page).display("1 / 1", both: true)
     #h(1fr)
     twofold academy ag | Thurgauerstrasse 54 | 8050 Zürich | hi\@twofold.swiss | twofold.swiss
   ],
@@ -22,7 +21,7 @@
 )
 
 
-#set text(font: "Arial")
+#set text(font: "FreeSans")
 #set table(columns: (auto, 1fr))
 
 #show link: underline
