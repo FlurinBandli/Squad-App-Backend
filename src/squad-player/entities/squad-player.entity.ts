@@ -1,8 +1,8 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Exclude } from "class-transformer";
-import { Player } from "../../../src/player/entities/player.entity";
-import { Squad } from "../../../src/squad/entities/squad.entity";
-import { Position } from "../../../src/types";
+import { Player } from "../../player/entities/player.entity";
+import { Squad } from "../../squad/entities/squad.entity";
+import { Position } from "../../types";
 import {
   Column,
   type DeepPartial,
