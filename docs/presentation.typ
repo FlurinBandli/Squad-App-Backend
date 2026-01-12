@@ -9,6 +9,24 @@
 
 === Sven Toye
 
+== Ausgangssituation
+
+- Eine REST API für die Verwaltung von Spierler*innen, Trainer*innen und Teamaufstellungen.
+- Der Fussballverein des VfB Zürich-Leutschenbach verschickt zu jedem Spieltag seiner Jugendmannschaften eine Email an
+  die Spieler/-innen und deren Eltern, in der der jeweilige Mannschaftskader bekannt gegeben wird.
+- Um diese Nachricht attraktiver zu gestalten und damit potentielle neue Spieler/-innen zu gewinnen, möchte der
+  Vereinspräsident seinen Trainer/-innen eine WebApp zur Verfügung stellen, mit deren Hilfe sie den Kader des jeweiligen
+  Spieles zusammenstellen können. Dieser Kader kann dann über eine definierte URL aufgerufen und per Email oder Whatsapp
+  verschickt werden.
+- Spieler*innen und Trainer*innen können jeweils in mehreren Teamkadern gleichzeitig eingesetzt werden.
+- Teamkader müssen nicht aus Spieler*innen des gleichen Geschlechts bestehen, sondern dürfen auch gemischt sein.
+- Speiler*innen können verschiedene Positionen in unterschiedlichen haben.
+- Folgende Spielpositionen gibt es: Tor, Abwehr, Mittelfeld, Sturm, Ersatzspieler
+- Pro Teamkader können mehrere Trainer*innen gesetzt werden.
+- Aufgabe dieser PIPA ist es, eine dokumentierte REST Schnittstelle zur Verfügung zu stellen, die beim Bau der Frontend
+  Applikation (NICHT TEIL DIESER API!) verwendet werden kann.
+
+
 == Anforderungen
 
 - Spieler:
@@ -29,8 +47,10 @@
   - trainer (list of trainers)
 
 #empty-slide()[
+  == ERD
   #set text(size: 12pt)
-  #include "erd.typ"
+  #import "erd.typ": erd
+  #align(center + horizon, erd)
 ]
 
 == Player
@@ -679,3 +699,170 @@ export class SquadController {
 }
 ```
 
+== Auth Service
+
+```ts
+@Injectable()
+class AuthService {
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
+  validateUser(username: string, password: string): { username: string } | null {
+    if (
+      this.configService.get("jwt.username") === username &&
+      this.configService.get("jwt.password") === password
+    ) return { username };
+    return null;
+  }
+  login(user: { username: string }): string {
+    return this.jwtService.sign(user);
+  }
+}
+```
+
+== Auth Controller
+
+```ts
+@Controller("/auth")
+class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @ApiCreatedResponse({ type: JwtDto, description: "Login erfolgreich" })
+  @ApiUnauthorizedResponse({ description: "Nicht berechtigt" })
+  @Post("/login")
+  login(@Body() body: LoginDto): JwtDto {
+    const user = this.authService.validateUser(body.username, body.password);
+    if (!user) {
+      throw new UnauthorizedException("Invalid credentials");
+    }
+    return new JwtDto(this.authService.login(user));
+  }
+}
+```
+
+== Testing (declarative tests)
+
+```ts
+const trainerTests: MockTest<Trainer> = {
+  name: "trainer",
+  entityClass: Trainer,
+  entityModules: [TrainerModule],
+  entities: [ { id: 1, firstName: "Yahya", lastName: "Sinwar", gender: Gender.Other },
+    { id: 2, firstName: "Mohammed", lastName: "Deif", gender: Gender.Male },
+    { id: 3, firstName: "Leila", lastName: "Khaled", gender: Gender.Female },
+    { id: 4, firstName: "Hassan", lastName: "Nasrallah", gender: Gender.Male },
+    { id: 5, firstName: "George", lastName: "Habash", gender: Gender.Male }, ],
+  partialEntities: [ { firstName: "Yahya", lastName: "Sinwar" },
+    { firstName: "Yahya", gender: Gender.Male },
+    { lastName: "Sinwar", gender: Gender.Male }, ],
+  invalidForCreateEntities: [
+    { entity: { firstName: "Test" }, err: "missing last name and gender" },
+    { entity: {}, err: "missing all properties" }, ],
+  invalidEntities: [
+    { entity: { firstName: "", lastName: "Test", gender: Gender.Male }, err: "empty first name" },
+    { entity: { firstName: "Test", lastName: "", gender: Gender.Female }, err: "empty last name" },
+    { entity: { firstName: "Test", lastName: "Player", gender: "INVALID" }, err: "invalid gender" },
+    { entity: { firstName: "Test", lastName: "Player", gender: "" }, err: "invalid gender" } ],
+};
+```
+
+== Testing setup
+
+```ts
+const tests: MockTest[] = [playerTests, trainerTests, squadTests];
+for (const test of tests) {
+  describe(test.name, () => {
+    let app: INestApplication<App>;
+    const url = `/${test.name}`; // z.B.: "/player", "/trainer", "/squad"
+    const mockRepository = newMockRepository();
+    ...
+    beforeAll(async () => {
+      const moduleFixture0 = Test.createTestingModule({ imports: test.entityModules })
+        .overrideProvider(getRepositoryToken(test.entityClass)).useValue(mockRepository);
+      if (test.entityClassDepenedencies) {
+        for (const entityClassDepenedency of test.entityClassDepenedencies) {
+          moduleFixture0
+            .overrideProvider(getRepositoryToken(entityClassDepenedency))
+            .useValue(newMockRepository());
+        }
+      }
+      const moduleFixture: TestingModule = await moduleFixture0
+        .overrideGuard(JwtGuard).useValue(mockJwtGuard).compile();
+      app = moduleFixture.createNestApplication();
+      ...
+```
+
+== Test (POST)
+
+```ts
+describe(`POST ${url}`, () => { // z.B.: "POST /player"
+  for (const entity of test.entities) {
+    it(`should create a ${test.name}`, () => { // z.B.: "should create a player"
+      return request(app.getHttpServer())
+        .post(url)
+        .send(entity)
+        .expect(201)
+        .then((response) => expectObjectEq(entity, response.body));
+    });
+  }
+  const invalidEntities = [...test.invalidForCreateEntities, ...test.invalidEntities];
+  for (const { entity, err } of invalidEntities) {
+    // z.B: "should fail to create a player because of missing last name and gender"
+    it(`should fail to create a ${test.name} because of ${err}`, () => {
+      return request(app.getHttpServer())
+        .post(url)
+        .send(entity)
+        .expect(400);
+    });
+  }
+})
+```
+
+== Test (DELETE)
+
+```ts
+describe(`DELETE ${urlWithId(url, ":id")}`, () => {
+  // z.B.: "should delete a trainer"
+  it(`should delete a ${test.name}`, () => {
+    mockRepository.existsBy.mockReturnValueOnce(true);
+    return request(app.getHttpServer())
+      .delete(urlWithId(url, 1))
+      .expect(200);
+  });
+
+  // z.B.: "should fail to delete a trainer with 404 because it does not exist"
+  it(`should fail to delete a ${test.name} with 404 because it does not exist`, () => {
+    mockRepository.existsBy.mockReturnValueOnce(false);
+    return request(app.getHttpServer())
+      .delete(urlWithId(url, 1))
+      .expect(404);
+  });
+});
+```
+
+== Test (PATCH)
+
+```ts
+describe(`PATCH ${url}/:id`, () => {
+  const entityToUpdate = test.entities[0];
+  it(`should update a ${test.name}`, () => {
+    mockRepository.findOneBy.mockReturnValueOnce(entityToUpdate);
+    return request(app.getHttpServer())
+      .patch(`${url}/${entityToUpdate.id}`)
+      .send(entityToUpdate).expect(200)
+      .then((response) => expectObjectEq(entityToUpdate, response.body));
+  });
+  for (const partialEntity of test.partialEntities) {
+    it(`should update select fields of a ${test.name}`, () => {
+      mockRepository.findOneBy.mockReturnValueOnce(entityToUpdate);
+      return request(app.getHttpServer())
+        .patch(`${url}/${entityToUpdate.id}`)
+        .send(partialEntity).expect(200)
+        .then((response) => {
+          expectObjectEq({...entityToUpdate, ...partialEntity}, response.body);
+        });
+    });
+  }
+}
+```

@@ -1,4 +1,5 @@
 #{
+  set text(font: "FreeSans")
   set table.hline(stroke: 2pt)
 
   let schema = yaml("openapi.yaml")
