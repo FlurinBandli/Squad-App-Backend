@@ -450,7 +450,10 @@ class SquadService {
   findOne(id: number): Promise<Squad | null> {
     return this.squadRepository.findOneBy({ id });
   }
+  ...
 
+
+  ...
   async update(
     id: number,
     updateSquadDto: UpdateSquadDto,
