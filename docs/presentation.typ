@@ -59,7 +59,7 @@
   ```ts
   @SerializeOptions({ excludeExtraneousValues: true })
   @Entity()
-  export class Player {
+  class Player {
     @ApiProperty({ description: "ID", example: 1 })
     @PrimaryGeneratedColumn()
     id: number;
@@ -272,7 +272,7 @@ class UpdateTrainerDto extends PartialType(CreateTrainerDto) {}
 
 ```ts
 @SerializeOptions({ excludeExtraneousValues: true })
-export class CreateSquadDto {
+class CreateSquadDto {
   @ApiProperty({ description: "Name", example: "FC Zürich" })
   @IsString()
   @IsNotEmpty()
@@ -343,7 +343,7 @@ class PlayerId {
 
 ```ts
 @Injectable()
-export class PlayerService {
+class PlayerService {
   constructor(
     @InjectRepository(Player)
     private playerRepository: Repository<Player>,
@@ -388,7 +388,7 @@ export class PlayerService {
 
 ```ts
 @Injectable()
-export class TrainerService {
+class TrainerService {
   constructor(
     @InjectRepository(Trainer)
     private trainerRepository: Repository<Trainer>,
@@ -433,7 +433,7 @@ export class TrainerService {
 
 ```ts
 @Injectable()
-export class SquadService {
+class SquadService {
   constructor(
     @InjectRepository(Squad)
     private squadRepository: Repository<Squad>,
@@ -586,7 +586,7 @@ class PlayerController {
 @UseGuards(JwtGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller("/trainer")
-export class TrainerController {
+class TrainerController {
   constructor(private readonly trainerService: TrainerService) {}
 
   @ApiOperation({ summary: "Erstelle einen Trainer" })
@@ -642,7 +642,7 @@ export class TrainerController {
 ```ts
 @Controller("/squad")
 @UseInterceptors(ClassSerializerInterceptor)
-export class SquadController {
+class SquadController {
   constructor(private readonly squadService: SquadService) {}
 
   @ApiOperation({ summary: "Erstelle einen Squad" })
