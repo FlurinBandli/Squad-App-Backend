@@ -233,8 +233,8 @@ class CreatePlayerDto {
   firstName: string;
 
   @ApiProperty({ description: "Nachname", example: "Toye" })
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   lastName: string;
 
   @ApiProperty({ description: "Geschlecht" })
@@ -668,7 +668,7 @@ class SquadController {
   @ApiOkResponse({ type: Squad, description: "Squad ausgelesen" })
   @ApiNotFoundResponse({ description: "Squad existiert nicht" })
   @Get(":id")
-  async findOne(@Param("id") id: number): Promise<Squad | null> {
+  async findOne(@Param("id") id: number): Promise<Squad> {
     const squad = await this.squadService.findOne(id);
     if (!squad) throw new NotFoundException();
     return squad;
@@ -682,7 +682,7 @@ class SquadController {
   async update(
     @Param("id") id: number,
     @Body() updateSquadDto: UpdateSquadDto,
-  ): Promise<Squad | null> {
+  ): Promise<Squad> {
     const squad = await this.squadService.update(id, updateSquadDto);
     if (!squad) throw new NotFoundException();
     return squad;
