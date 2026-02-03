@@ -6,7 +6,7 @@ pkgs.buildNpmPackage {
   version = "0.0.1";
   src = fetchGit {
     url = ./.;
-    rev = "8b26e13e2c4c247015ec7e4bbd1ce34dc051609f";
+    rev = "dd453c74e9b58dc317123164cd6f9e26a746b385";
   };
-  npmDepsHash = "sha256-5Noq2GrLiRXWa7oaGYTWC788vcJjvOHfONdrUFW7VKA=";
+  npmDepsHash = "sha256-OZDCqXW9YlGcuEgu9Qowzvg/sunmbEann2lw2FT0ukU=";
 }
