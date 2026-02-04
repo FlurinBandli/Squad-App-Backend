@@ -1,6 +1,6 @@
 {
   pkgs ? import <nixpkgs> { },
-  backend ? (pkgs.callPackage ./default.nix { }).overrideAttrs { npmFlags = [ "--include=dev" ]; },
+  backend ? pkgs.callPackage ./default.nix { },
 }:
 pkgs.mkShell {
   inputsFrom = [ backend ];
