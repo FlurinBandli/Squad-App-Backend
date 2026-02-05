@@ -3,9 +3,9 @@
   backend ? pkgs.callPackage ./backend.nix { },
 }:
 let
-  appName = "squad-app-backend-pipa";
+  name = "squad-app-backend-pipa";
   appUninteractive = pkgs.writeShellApplication {
-    name = appName;
+    inherit name;
     runtimeInputs = [
       pkgs.mariadb
       backend
@@ -43,6 +43,7 @@ let
 
       # Install database if doesn't exist
       if [ $INSTALL_MYSQL -eq 0 ]; then
+        printf "installing database...\n"
         mariadb-install-db \
           --no-defaults \
           --auth-root-authentication-method=normal \
@@ -50,6 +51,7 @@ let
           --basedir="$MYSQL_BASE_DIR" \
           --pid-file="$MYSQL_PID_FILE" \
           --extra-file="$MYSQL_INIT_FILE"
+        printf "done installing database\n"
       fi
 
       function startDb() {
@@ -57,6 +59,7 @@ let
           echo "error: database is already running (PID $APP_PID). stop it with stopDb." >&2
           return
         fi
+        printf "starting database...\n"
         mariadbd \
           --no-defaults \
           --port="$MYSQL_PORT" \
@@ -64,14 +67,16 @@ let
           --pid-file="$MYSQL_PID_FILE" \
           --datadir="$MYSQL_DATA_DIR" &
         MYSQL_PID=$!
-        # Wait for database to be ready
-        mariadb-admin ping --port="$MYSQL_PORT" --wait=1
+        mariadb-admin ping --port="$MYSQL_PORT" --wait=1 > /dev/null
+        printf "done starting database\n"
       }
       function stopDb() {
         if [ "$MYSQL_PID" ]; then
+          printf "stopping database...\n"
           mariadb-admin shutdown -u root --socket="$MYSQL_SOCKET_FILE"
           wait "$MYSQL_PID"
           MYSQL_PID=
+          printf "done stopping database\n"
         fi
       }
 
@@ -80,14 +85,18 @@ let
           echo "error: app is already running (PID $APP_PID). stop it with stopApp." >&2
           return
         fi
+        printf "starting app...\n"
         $backend/bin/squad-app-backend-pipa &
         APP_PID=$!
+        printf "done starting app\n"
       }
       function stopApp() {
         if [ "$APP_PID" ]; then
+          printf "stopping app...\n"
           kill "$APP_PID"
           wait "$APP_PID"
           APP_PID=
+          printf "done stopping app\n"
         fi
       }
 
@@ -113,10 +122,14 @@ let
       startDb
 
       if [ "$INSTALL_MYSQL" -eq 0 ]; then
+        printf "running migrations...\n"
         runMigration
+        printf "done running migrations\n"
       fi
 
       startApp
+
+      ps
 
       function onExit() {
         stopApp
@@ -124,15 +137,14 @@ let
       }
       trap onExit EXIT
 
-      function onInterupt() {
-        APP_PID=
+      function onInterrupt() {
+        stopApp
       }
-      trap onInterupt INT
+      trap onInterrupt INT
     '';
-
   };
-  app = pkgs.writeShellScriptBin appName ''
-    ${pkgs.bashInteractive}/bin/bash --init-file ${appUninteractive}/bin/${appName}
+  app = pkgs.writeShellScriptBin name ''
+    ${pkgs.bashInteractive}/bin/bash --init-file ${appUninteractive}/bin/${name}
   '';
 in
 app
