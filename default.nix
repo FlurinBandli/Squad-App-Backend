@@ -3,9 +3,15 @@
   backend ? pkgs.callPackage ./backend.nix { },
 }:
 let
-  name = "squad-app-backend-pipa";
-  appUninteractive = pkgs.writeShellApplication {
-    inherit name;
+  makeInteractive =
+    application:
+    pkgs.writeShellScriptBin application.name ''
+      ${pkgs.bashInteractive}/bin/bash --init-file ${application}/bin/${application.name}
+    '';
+in
+makeInteractive (
+  pkgs.writeShellApplication {
+    name = "squad-app-backend-pipa";
     runtimeInputs = [
       pkgs.mariadb
       backend
@@ -142,9 +148,5 @@ let
       }
       trap onInterrupt INT
     '';
-  };
-  app = pkgs.writeShellScriptBin name ''
-    ${pkgs.bashInteractive}/bin/bash --init-file ${appUninteractive}/bin/${name}
-  '';
-in
-app
+  }
+)
