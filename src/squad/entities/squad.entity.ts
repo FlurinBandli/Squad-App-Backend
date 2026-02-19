@@ -31,7 +31,9 @@ export class Squad {
     cascade: true,
     nullable: false,
   })
-  @JoinTable()
+  @JoinTable({
+    name: "squad_trainer",
+  })
   trainers: Trainer[];
 
   @ApiProperty({ description: "Name", example: "FC Zürich" })
