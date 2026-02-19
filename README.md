@@ -4,6 +4,7 @@
 
 ```bash
 git clone https://git.twofold.dev/sventoye/squad-app-backend-pipa.git
+git checkout develop
 ```
 
 ## Requirements
