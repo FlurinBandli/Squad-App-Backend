@@ -3,16 +3,30 @@
 ## Installation
 
 ```bash
-git clone https://git.twofold.dev/sventoye/squad-app-backend.git
+git clone https://git.twofold.dev/sventoye/squad-app-backend-pipa.git
 ```
 
 ## Requirements
 
-- [docker](https://docs.docker.com/desktop/)
-- [node](https://nodejs.org/en/download) (for local deployment only)
-- npm or [pnpm](https://pnpm.io/installation#using-npm) (for local deployment only)
+### Production Requirements
 
-## Setup (for local deployment only)
+- [docker](https://docs.docker.com/desktop/)
+
+### Development Requirements
+
+- [docker](https://docs.docker.com/desktop/)
+- [node](https://nodejs.org/en/download)
+- npm
+
+## Setup
+
+### Production Setup
+
+```bash
+docker compose build
+```
+
+### Development Setup
 
 ```bash
 npm install
@@ -20,37 +34,49 @@ npm install
 
 ## Usage
 
-### Compile and run the project in Docker
+### Production
 
 ```bash
-docker compose up db --build
+docker compose up --build
 ```
 
-### Compile and run the project locally (prefer Docker deployment)
+### Development
 
 ```bash
 # Run the database Docker container
 docker compose up db --build
+# Run the database dashboard Docker container (optional)
+docker compose up db_dashboard --build
 
-# development
+# Development mode
 npm run start
 
-# watch mode
+# Development watch mode
 npm run start:dev
 
-# production mode
+# Production mode
 npm run start:prod
+```
+
+### Run migrations
+
+```bash
+# Run
+npm run migration:run
+
+# Revert
+npm run migration:revert
 ```
 
 ### Run tests
 
 ```bash
-# unit tests
+# Unit tests
 npm run test
 
-# e2e tests
+# E2E tests
 npm run test:e2e
 
-# test coverage
+# Test coverage
 npm run test:cov
 ```
