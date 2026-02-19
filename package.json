@@ -1,10 +1,11 @@
 {
-  "name": "nest-tutorial",
+  "name": "squad-app-backend-pipa",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "bin": "dist/src/main.js",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"eslint.config.mjs\" \"tsconfig.json\"",
@@ -19,9 +20,13 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-esm",
+    "typeorm:prod": "typeorm",
     "migration:generate": "npm run build && npm run typeorm -- migration:generate -d src/typeorm.ts",
     "migration:run": "npm run build && npm run typeorm -- migration:run -d src/typeorm.ts",
-    "migration:revert": "npm run build && npm run typeorm -- migration:revert -d src/typeorm.ts"
+    "migration:revert": "npm run build && npm run typeorm -- migration:revert -d src/typeorm.ts",
+    "migration:generate:prod": "npm run typeorm:prod -- migration:generate -d dist/src/typeorm.js",
+    "migration:run:prod": "npm run typeorm:prod -- migration:run -d dist/src/typeorm.js",
+    "migration:revert:prod": "npm run typeorm:prod -- migration:revert -d dist/src/typeorm.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
