@@ -41,7 +41,7 @@
     edge2((<player>, [mc]), (<squad>, [mc]), "<|--|>"),
     node((1, 0), name: <squad>, grid(
       grid.cell(colspan: 2)[Squad],
-      [ID], [int], [trainerId], [int], [name], [varchar], [description], [varchar], [date], [date],
+      [ID], [int], [name], [varchar], [description], [varchar], [date], [date],
     )),
     edge2((<squad>, [mc]), (<trainer>, [mc]), "<|--|>"),
 

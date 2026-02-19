@@ -14,6 +14,7 @@ makeInteractive (
     name = "squad-app-backend-pipa";
     runtimeInputs = [
       pkgs.mariadb
+      pkgs.nodejs
       backend
     ];
     runtimeEnv = {
@@ -115,7 +116,7 @@ makeInteractive (
       function generateMigration() {
         local prevPwd="$PWD"
         cd $backend/lib/node_modules/squad-app-backend-pipa
-        npm run migration:generate:prod
+        npm run migration:generate:prod "$prevPwd/migrations/$1"
         cd "$prevPwd"
       }
       function revertMigration() {
