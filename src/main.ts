@@ -5,7 +5,7 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix("/api");
+  app.setGlobalPrefix("api");
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -28,13 +28,19 @@ async function bootstrap() {
     )
     .setVersion("1.0")
     .addBearerAuth({ type: "http" })
-    .setBasePath(`http://localhost:${port}`)
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, documentFactory, {
+    useGlobalPrefix: true,
     raw: ["json", "yaml"],
     jsonDocumentUrl: "api.json",
     yamlDocumentUrl: "api.yaml",
+    customCssUrl:
+      "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
+    customJs: [
+      "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
+      "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js",
+    ],
   });
 
   await app.listen(port);

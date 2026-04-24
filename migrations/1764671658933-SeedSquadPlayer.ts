@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class SeedSquadPlayer1764671658933 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-      INSERT INTO squad_player (playerId, squadId, position) VALUES
+      INSERT INTO "squad_player" ("playerId", "squadId", "position") VALUES
         (1, 1, 'Goalkeeper'),
         (2, 1, 'Defender'),
         (3, 1, 'Defender'),
@@ -108,6 +108,6 @@ export class SeedSquadPlayer1764671658933 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query("DELETE FROM squad_player");
+    await queryRunner.query(`DELETE FROM "squad_player"`);
   }
 }

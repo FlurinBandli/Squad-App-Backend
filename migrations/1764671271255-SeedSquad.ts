@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class SeedSquad1764671271255 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-      INSERT INTO squad (id, name, description, date) VALUES
+      INSERT INTO "squad" ("id", "name", "description", "date") VALUES
         (1, 'Die Feuerfüchse', 'Eine aggressive Offensivmannschaft mit schnellen Flügelspielern.', '2024-09-10'),
         (2, 'Sturmkrähen', 'Bekannt für ihre unberechenbaren Konter und hohe Pressingintensität.', '2024-08-22'),
         (3, 'Eisadler', 'Disziplinierte Defensivformation, die auf Standardsituationen spezialisiert ist.', '2024-10-05'),
@@ -20,6 +20,6 @@ export class SeedSquad1764671271255 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query("DELETE FROM squad");
+    await queryRunner.query(`DELETE FROM "squad"`);
   }
 }

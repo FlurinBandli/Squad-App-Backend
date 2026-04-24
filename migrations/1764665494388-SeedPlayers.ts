@@ -7,17 +7,20 @@ export class SeedPlayers1764665494388 implements MigrationInterface {
     for (const row of file.toString().trim().split("\n").slice(1)) {
       const columns = row.split(",");
       const gender = columns[3];
-      if (gender != "Male" && gender != "Female") {
+
+      if (gender !== "Male" && gender !== "Female") {
         columns[3] = "Other";
       }
+
       await queryRunner.query(
-        "INSERT INTO `player` (`id`, `firstName`, `lastName`, `gender`) VALUES (?, ?, ?, ?)",
+        `INSERT INTO "player" ("id", "firstName", "lastName", "gender")
+         VALUES ($1, $2, $3, $4)`,
         columns,
       );
     }
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query("DELETE FROM `player`");
+    await queryRunner.query(`DELETE FROM "player"`);
   }
 }

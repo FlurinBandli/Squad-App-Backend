@@ -1,83 +1,84 @@
-# Squad App Backend PIPA
+# Squad App Backend (PIPA)
 
-## Installation
+## 📌 About
 
-```bash
-git clone https://git.twofold.dev/sventoye/squad-app-backend-pipa.git
-git checkout develop
-```
+This project was originally created as part of an IPA (Individuelle Praktische Arbeit) by another developer.
 
-## Requirements
+It has been extended and adapted by **Flurin Bandli** to support:
 
-### Production Requirements
+- Deployment on **Vercel**
+- Integration with a **Neon (PostgreSQL) database**
+- Production-ready configuration without Docker
 
-- [docker](https://docs.docker.com/desktop/)
+---
 
-### Development Requirements
+## 🚀 Tech Stack
 
-- [docker](https://docs.docker.com/desktop/)
-- [node](https://nodejs.org/en/download)
-- npm
+- NestJS
+- TypeORM
+- PostgreSQL (Neon)
+- Vercel (Deployment)
 
-## Setup
+---
 
-### Production Setup
+## ⚙️ Setup
 
-```bash
-docker compose build
-```
-
-### Development Setup
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-## Usage
+### 2. Environment variables
 
-### Production
+Create a .env file in the root directory:
 
-```bash
-docker compose up --build
+```env
+DATABASE_URL=
+
+PORT=3000
+
+AUTH_USERNAME=
+AUTH_PASSWORD=
 ```
 
-### Development
+### 3. Run migrations
 
 ```bash
-# Run the database Docker container
-docker compose up db --build
-# Run the database dashboard Docker container (optional)
-docker compose up db_dashboard --build
-
-# Development mode
-npm run start
-
-# Development watch mode
-npm run start:dev
-
-# Production mode
-npm run start:prod
-```
-
-### Run migrations
-
-```bash
-# Run
+npm run build
 npm run migration:run
-
-# Revert
-npm run migration:revert
 ```
 
-### Run tests
+### 4. Start backend
 
 ```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
+npm run start
 ```
+
+## 🌐 API
+
+All endpoints are prefixed with:
+
+`/api`
+
+Example:
+
+POST /api/auth/login
+GET /api/squad
+
+## 🔐 Authentication
+
+Login via:
+
+POST /api/auth/login
+
+Body:
+
+{
+"username": "...",
+"password": "..."
+}
+
+Use the returned token:
+
+Authorization: Bearer <token>

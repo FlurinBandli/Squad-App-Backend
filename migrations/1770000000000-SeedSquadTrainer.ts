@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class SeedSquadPlayer1770000000000 implements MigrationInterface {
+export class SeedSquadTrainer1770000000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-      INSERT INTO squad_trainer (trainerId, squadId) VALUES
+      INSERT INTO "squad_trainer" ("trainerId", "squadId") VALUES
         (1, 1),
         (2, 2),
         (3, 3),
@@ -34,6 +34,6 @@ export class SeedSquadPlayer1770000000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query("DELETE FROM squad_trainer");
+    await queryRunner.query(`DELETE FROM "squad_trainer"`);
   }
 }
