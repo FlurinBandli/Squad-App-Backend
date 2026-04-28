@@ -18,6 +18,13 @@ export class SeedTrainers1764668685731 implements MigrationInterface {
         columns,
       );
     }
+
+    await queryRunner.query(`
+      SELECT setval(
+        pg_get_serial_sequence('"trainer"', 'id'),
+        (SELECT MAX(id) FROM "trainer")
+      );
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

@@ -18,6 +18,13 @@ export class SeedPlayers1764665494388 implements MigrationInterface {
         columns,
       );
     }
+
+    await queryRunner.query(`
+      SELECT setval(
+        pg_get_serial_sequence('"player"', 'id'),
+        (SELECT MAX(id) FROM "player")
+      );
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

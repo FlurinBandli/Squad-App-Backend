@@ -15,7 +15,14 @@ export class SeedSquad1764671271255 implements MigrationInterface {
         (9, 'Gletscherfüchse', 'Geduldiges Aufbauspiel und präzise Flanken.', '2024-10-08'),
         (10, 'Wüstenfalken', 'Ermüdet Gegner durch hohes Laufpensum und Ausdauer.', '2024-09-12'),
         (11, 'Blitzbiber', 'Schnelle Kurzpasskombinationen und technische Überlegenheit.', '2024-08-28'),
-        (12, 'Felsadler', 'Unbezwingbare Defensive und starke Kopfballstärke.', '2024-10-19')
+        (12, 'Felsadler', 'Unbezwingbare Defensive und starke Kopfballstärke.', '2024-10-19');
+    `);
+
+    await queryRunner.query(`
+      SELECT setval(
+        pg_get_serial_sequence('"squad"', 'id'),
+        (SELECT MAX(id) FROM "squad")
+      );
     `);
   }
 
