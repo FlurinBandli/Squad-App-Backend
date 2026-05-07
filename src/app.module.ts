@@ -8,16 +8,15 @@ import { SquadModule } from "./squad/squad.module";
 import { SquadPlayerModule } from "./squad-player/squad-player.module";
 import authConfig from "./config/auth.config";
 import { AuthModule } from "./auth/auth.module";
+import { SentryGlobalFilter, SentryModule } from "@sentry/nestjs/setup";
+import { APP_FILTER } from "@nestjs/core";
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     AuthModule,
     ConfigModule.forRoot({
-      load: [typeormConfig],
-      isGlobal: true,
-    }),
-    ConfigModule.forRoot({
-      load: [authConfig],
+      load: [typeormConfig, authConfig],
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
@@ -30,6 +29,9 @@ import { AuthModule } from "./auth/auth.module";
     SquadModule,
     SquadPlayerModule,
   ],
-  providers: [ClassSerializerInterceptor],
+  providers: [
+    ClassSerializerInterceptor,
+    { provide: APP_FILTER, useClass: SentryGlobalFilter },
+  ],
 })
 export class AppModule {}
